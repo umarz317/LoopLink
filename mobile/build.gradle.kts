@@ -17,8 +17,8 @@ android {
         applicationId = "io.loopbreak.looplink"
         minSdk = 28
         targetSdk = 37
-        versionCode = 28
-        versionName = "0.2.9"
+        versionCode = 29
+        versionName = "0.3.0"
 
     }
 

@@ -1,4 +1,6 @@
-# DiPlay
+<img src="asset/looplink-logo.svg" alt="LoopLink" width="320">
+
+![LoopLink 主界面与播放按钮标志](asset/screenshot.png)
 
 为兼容的比亚迪安卓车机提供有线及无线 CarPlay，采用 DiAuto 风格界面。
 

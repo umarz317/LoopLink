@@ -1,3 +1,9 @@
+# LoopLink 0.3.0 — 2026-10-01
+
+- Use the play-button logo consistently in the launcher and documentation.
+- Publish a signed release APK with versionCode 29 and the explicitly selected local runtime authentication assets.
+- Public-tree check, 274 unit tests and release lint pass (four lint warnings). Verify the existing release signing key, package/version, non-debuggable flag and exact runtime-asset matches. No device testing performed for this release.
+
 # LoopLink 0.2.9 — 2026-10-01
 
 - Redesign the head-unit UI for quick use in the car and add a switch for CarPlay's Home icon.

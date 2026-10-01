@@ -4,6 +4,12 @@
 
 > **Fork notice.** LoopLink is a fork of [DiPlay](https://github.com/shihabal3amri/DiPlay) by shihabal3amri, which is itself based on [xcertplay](https://github.com/shilapi/xcertplay) by shilapi; its settings layout adapts [DiAuto](https://github.com/shihabal3amri/DiAuto). LoopLink removes DiPlay's BYD-specific features and rebrands the app. It is an independent project and is not affiliated with or endorsed by the DiPlay, xcertplay or DiAuto authors.
 
+## Screenshots
+
+![LoopLink home screen with the play-button logo](asset/screenshot.png)
+
+Captured in the Android head-unit emulator.
+
 ## What it does
 
 - Wired USB and wireless CarPlay (Wi-Fi Direct or the car's existing hotspot) with local authentication.
