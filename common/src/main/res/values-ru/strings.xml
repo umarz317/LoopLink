@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="video_rendering">Отрисовка видео</string>
+    <string name="video_rendering_compatibility">Совместимость</string>
+    <string name="video_rendering_efficient">Эффективный</string>
+    <string name="video_rendering_hint">Эффективный режим может снизить нагрузку на графику. Выберите Совместимость, если изображение или элементы поверх него отображаются неправильно. Применение переподключает CarPlay.</string>
     <string name="built_in_car_hotspot">Встроенная точка доступа автомобиля</string>
     <string name="hotspot_hint_manual">Встроенная точка доступа · Держите точку доступа, Bluetooth и Wi-Fi iPhone включёнными.</string>
     <string name="hotspot_hint_local">Откройте настройки подключения, чтобы сохранить данные встроенной точки доступа.</string>

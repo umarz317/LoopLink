@@ -153,12 +153,31 @@ object ScreenCodec {
 
     /** The wire format is length-prefixed, even when its first length happens to be one. */
     fun lengthPrefixedToAnnexB(payload: ByteArray, lengthSize: Int = 4): ByteArray {
-        val converted = MediaCodecSupport.toAnnexB(payload, lengthSize, allowAnnexB = false)
-        if (converted.size == payload.size) {
-            converted.copyInto(payload)
-            return payload
+        if (lengthSize != 4) {
+            return MediaCodecSupport.toAnnexB(payload, lengthSize, allowAnnexB = false)
         }
-        return converted
+
+        // Validate the entire access unit before rewriting any prefix. A damaged later
+        // NAL must reject the frame without leaving the earlier prefixes mutated.
+        var cursor = 0
+        while (cursor < payload.size) {
+            if (payload.size - cursor < 4) return ByteArray(0)
+            val length = readU32Be(payload, cursor)
+            cursor += 4
+            if (length <= 0 || length > payload.size - cursor) return ByteArray(0)
+            cursor += length
+        }
+
+        cursor = 0
+        while (cursor < payload.size) {
+            val length = readU32Be(payload, cursor)
+            payload[cursor] = 0
+            payload[cursor + 1] = 0
+            payload[cursor + 2] = 0
+            payload[cursor + 3] = 1
+            cursor += 4 + length
+        }
+        return payload
     }
 
     fun detectConfig(payload: ByteArray): Pair<VideoCodec, ByteArray> {
@@ -182,6 +201,12 @@ object ScreenCodec {
 
     private fun readU16Be(source: ByteArray, offset: Int): Int =
         ((source[offset].toInt() and 0xff) shl 8) or (source[offset + 1].toInt() and 0xff)
+
+    private fun readU32Be(source: ByteArray, offset: Int): Int =
+        ((source[offset].toInt() and 0xff) shl 24) or
+            ((source[offset + 1].toInt() and 0xff) shl 16) or
+            ((source[offset + 2].toInt() and 0xff) shl 8) or
+            (source[offset + 3].toInt() and 0xff)
 
     const val TAG_SIZE = 16
 }

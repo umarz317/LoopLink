@@ -270,6 +270,12 @@ class DiPlayActivity : ComponentActivity() {
         content.addView(largeTitle(getString(R.string.advanced), 40))
         content.addView(label(getString(R.string.apply_reconnects_carplay_for_size_resolution_music_buffer), 17, MUTED).apply { setPadding(0, dp(8), 0, dp(8)) })
         section(content, getString(R.string.display_and_performance), R.drawable.ic_dp_display) { card ->
+            choice(card, getString(R.string.video_rendering),
+                listOf(getString(R.string.video_rendering_compatibility), getString(R.string.video_rendering_efficient)),
+                if (AirPlayPersistence.loadSurfaceViewEnabled(this)) 1 else 0) {
+                AirPlayPersistence.saveSurfaceViewEnabled(this, it == 1)
+            }
+            card.addView(label(getString(R.string.video_rendering_hint), 14, MUTED))
             choice(card, getString(R.string.resolution), listOf(getString(R.string.resolution_native), getString(R.string.s_80_lighter_load), getString(R.string.s_60_lightest_load)), listOf(10, 8, 6).indexOf(AirPlayPersistence.loadDisplayScaleTenths(this)).coerceAtLeast(0)) { AirPlayPersistence.saveDisplayScaleTenths(this, listOf(10, 8, 6)[it]) }
             val bufferPresets = com.shilapi.xcertplay.media.MediaAudioBuffer.presets
             choice(card, getString(R.string.music_buffer), listOf(getString(R.string.s_300_ms_default), getString(R.string.s_500_ms), getString(R.string.s_1000_ms_most_stable)),
@@ -784,6 +790,7 @@ class DiPlayActivity : ComponentActivity() {
                     appendLine("Authentication: local experimental beta identity; no remote fallback")
                     appendLine("CarPlay setup: ${if (setupError == null) "ready" else "authentication unavailable"}")
                     appendLine("Saved video preference (may differ from active session): ${if (AirPlayPersistence.loadHevcEnabled(appContext)) "HEVC" else "H.264"}; ${AirPlayPersistence.loadFps(appContext)} fps")
+                    appendLine("Saved renderer preference (may differ from active view): ${if (AirPlayPersistence.loadSurfaceViewEnabled(appContext)) "SurfaceView" else "TextureView"}")
                     appendLine("CarPlay size: ${com.shilapi.xcertplay.airplay.CarPlaySize.fromWidthMillimeters(AirPlayPersistence.loadWidthPhysicalMm(appContext)).label}")
                     appendLine("Saved resolution preference (may differ from active session): ${AirPlayPersistence.loadDisplayScaleTenths(appContext) * 10}%")
                     appendLine("Session: ${if (CarPlayBackgroundSession.active) "active" else if (CarPlayBackgroundSession.hasSession()) "connecting" else "stopped"}")

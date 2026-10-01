@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="video_rendering">Renderizado de vídeo</string>
+    <string name="video_rendering_compatibility">Compatibilidad</string>
+    <string name="video_rendering_efficient">Eficiente</string>
+    <string name="video_rendering_hint">El modo Eficiente puede reducir la carga gráfica. Elige Compatibilidad si la imagen o las capas superpuestas no se muestran correctamente. Al aplicar, CarPlay se vuelve a conectar.</string>
     <string name="built_in_car_hotspot">Punto de acceso integrado del coche</string>
     <string name="hotspot_hint_manual">Punto de acceso integrado · Mantén activos el punto de acceso, el Bluetooth y el Wi‑Fi del iPhone.</string>
     <string name="hotspot_hint_local">Abre la configuración de conexión para guardar los datos del punto de acceso integrado.</string>

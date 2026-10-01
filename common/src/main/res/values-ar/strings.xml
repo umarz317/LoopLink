@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="video_rendering">عرض الفيديو</string>
+    <string name="video_rendering_compatibility">التوافق</string>
+    <string name="video_rendering_efficient">الكفاءة</string>
+    <string name="video_rendering_hint">قد يقلل وضع الكفاءة الحمل على الرسومات. اختر التوافق إذا لم تظهر الصورة أو الطبقات بشكل صحيح. يؤدي التطبيق إلى إعادة اتصال CarPlay.</string>
     <string name="built_in_car_hotspot">نقطة اتصال السيارة المدمجة</string>
     <string name="hotspot_hint_manual">نقطة اتصال السيارة المدمجة · أبقِ نقطة الاتصال والبلوتوث وواي فاي iPhone مُفعّلة.</string>
     <string name="hotspot_hint_local">افتح إعداد الاتصال لحفظ بيانات نقطة اتصال السيارة المدمجة.</string>

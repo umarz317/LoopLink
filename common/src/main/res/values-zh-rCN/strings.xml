@@ -1,4 +1,8 @@
 <resources>
+    <string name="video_rendering">视频渲染</string>
+    <string name="video_rendering_compatibility">兼容模式</string>
+    <string name="video_rendering_efficient">高效模式</string>
+    <string name="video_rendering_hint">高效模式可降低图形负载。如果画面或叠加界面显示异常，请选择兼容模式。应用后将重新连接 CarPlay。</string>
     <string name="built_in_car_hotspot">车载热点</string>
     <string name="wifi_direct">Wi-Fi Direct</string>
     <string name="hotspot_hint_manual">车载热点 · 保持车载热点、蓝牙和 iPhone 的 Wi-Fi 开启。</string>

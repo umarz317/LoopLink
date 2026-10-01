@@ -1,4 +1,8 @@
 <resources>
+    <string name="video_rendering">Video rendering</string>
+    <string name="video_rendering_compatibility">Compatibility</string>
+    <string name="video_rendering_efficient">Efficient</string>
+    <string name="video_rendering_hint">Efficient can reduce graphics load. Choose Compatibility if the picture or overlays do not display correctly. Applying reconnects CarPlay.</string>
     <string name="built_in_car_hotspot">Built-in car hotspot</string>
     <string name="wifi_direct">Wi-Fi Direct</string>
     <string name="hotspot_hint_manual">Built-in car hotspot · Keep the car hotspot, Bluetooth and your iPhone’s Wi-Fi on.</string>

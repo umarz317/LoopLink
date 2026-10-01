@@ -9,6 +9,7 @@ import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.PixelFormat
 import android.graphics.SurfaceTexture
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -27,6 +28,8 @@ import android.util.Log
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.Surface
+import android.view.SurfaceHolder
+import android.view.SurfaceView
 import android.view.TextureView
 import android.view.KeyEvent
 import android.view.View
@@ -90,9 +93,9 @@ import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
- * Full-screen CarPlay host. It renders decoded video through a [TextureView], forwards touch to
- * the active AirPlay session, and drives the complete wired or wireless bring-up through
- * [CarPlayController].
+ * Full-screen CarPlay host. It renders decoded video through a [SurfaceView] or [TextureView],
+ * forwards touch to the active AirPlay session, and drives the complete wired or wireless
+ * bring-up through [CarPlayController].
  *
  * Apple devices are discovered by vendor ID; CH341 uses the configured VID/PID below.
  */
@@ -235,7 +238,7 @@ class CarPlayHostActivity : ComponentActivity() {
             }
         }
 
-    private var videoView: TextureView? = null
+    private var videoView: View? = null
     private var gestureOverlay: View? = null
     private var settingsMenu: View? = null
     private var mfiTargetGroup: RadioGroup? = null
@@ -364,18 +367,32 @@ class CarPlayHostActivity : ComponentActivity() {
 
         override fun onSurfaceTextureDestroyed(texture: SurfaceTexture): Boolean {
             if (currentSurfaceTexture !== texture) return true
-            currentSurface?.let { surface ->
-                sink?.clearSurface(SCREEN_TYPE_MAIN, surface)
-                sink?.clearSurface(SCREEN_TYPE_ALT, surface)
-                surface.release()
-            }
-            currentSurface = null
-            currentSurfaceTexture = null
+            detachCurrentSurface()
             appendLog("Texture surface destroyed")
             return true
         }
 
         override fun onSurfaceTextureUpdated(texture: SurfaceTexture) = Unit
+    }
+
+    private val surfaceListener = object : SurfaceHolder.Callback {
+        override fun surfaceCreated(holder: SurfaceHolder) {
+            currentSurface = holder.surface
+            currentSurfaceTexture = null
+            attachSurface(holder.surface)
+            appendLog("SurfaceView surface created")
+        }
+
+        override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+            if (currentSurface !== holder.surface) return
+            scheduleDisplaySize(width, height)
+        }
+
+        override fun surfaceDestroyed(holder: SurfaceHolder) {
+            if (currentSurface !== holder.surface) return
+            detachCurrentSurface()
+            appendLog("SurfaceView surface destroyed")
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -558,6 +575,11 @@ class CarPlayHostActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        val view = videoView
+        if (view != null && AirPlayPersistence.loadSurfaceViewEnabled(this) != (view is SurfaceView)) {
+            recreate()
+            return
+        }
         val languagePreference = AppLocale.preference(this)
         if (Build.VERSION.SDK_INT < 33 && languagePreference != languagePreferenceAtCreate) {
             languagePreferenceAtCreate = languagePreference
@@ -615,13 +637,7 @@ class CarPlayHostActivity : ComponentActivity() {
     override fun onDestroy() {
         mainHandler.removeCallbacks(applyDisplaySize)
         mainHandler.removeCallbacks(expireOldLogLines)
-        currentSurface?.let { surface ->
-            sink?.clearSurface(SCREEN_TYPE_MAIN, surface)
-            sink?.clearSurface(SCREEN_TYPE_ALT, surface)
-            surface.release()
-        }
-        currentSurface = null
-        currentSurfaceTexture = null
+        detachCurrentSurface()
         sessionLog?.append("Activity destroyed")
         sessionLog?.close()
         sessionLog = null
@@ -631,10 +647,21 @@ class CarPlayHostActivity : ComponentActivity() {
     private fun buildContentView(): View {
         val compact = resources.configuration.screenHeightDp < 640
         val root = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
-        val video = TextureView(this).apply {
-            isOpaque = false
-            surfaceTextureListener = textureListener
+        val video = if (AirPlayPersistence.loadSurfaceViewEnabled(this)) {
+            SurfaceView(this).apply {
+                holder.setFormat(PixelFormat.OPAQUE)
+                holder.addCallback(surfaceListener)
+                if (Build.VERSION.SDK_INT >= 34) {
+                    setSurfaceLifecycle(SurfaceView.SURFACE_LIFECYCLE_FOLLOWS_ATTACHMENT)
+                }
+            }
+        } else {
+            TextureView(this).apply {
+                isOpaque = false
+                surfaceTextureListener = textureListener
+            }
         }
+        appendLog("Video renderer=${if (video is SurfaceView) "SurfaceView" else "TextureView"}")
         val gestureLayer = View(this).apply {
             isClickable = true
             setOnTouchListener { view, event -> onHostTouch(view, event) }
@@ -3261,6 +3288,17 @@ class CarPlayHostActivity : ComponentActivity() {
     private fun attachSurface(surface: Surface) {
         sink?.setSurface(SCREEN_TYPE_MAIN, surface)
         sink?.setSurface(SCREEN_TYPE_ALT, surface)
+    }
+
+    private fun detachCurrentSurface() {
+        currentSurface?.let { surface ->
+            sink?.clearSurface(SCREEN_TYPE_MAIN, surface)
+            sink?.clearSurface(SCREEN_TYPE_ALT, surface)
+            // SurfaceHolder owns its Surface. Only release wrappers created for TextureView.
+            if (currentSurfaceTexture != null) surface.release()
+        }
+        currentSurface = null
+        currentSurfaceTexture = null
     }
 
     private fun onHostTouch(view: View, event: MotionEvent): Boolean {

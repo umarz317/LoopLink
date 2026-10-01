@@ -32,6 +32,37 @@ class ScreenCodecTest {
         assertEquals(0, ScreenCodec.lengthPrefixedToAnnexB(payload).size)
         assertArrayEquals(original, payload)
     }
+
+    @Test
+    fun damagedLaterNalDoesNotMutateEarlierValidPrefixes() {
+        val validNal = byteArrayOf(0, 0, 0, 2, 0x41, 1)
+        val damagedTails = listOf(
+            byteArrayOf(0, 0, 0, 5, 0x40, 1), // Length exceeds the remaining payload.
+            byteArrayOf(0, 0, 0, 0), // Empty NAL.
+            byteArrayOf(0, 0, 0), // Incomplete prefix.
+            byteArrayOf(0x80.toByte(), 0, 0, 0), // Unsigned length exceeds Int.MAX_VALUE.
+            byteArrayOf(0x7f, -1, -1, -1), // Large positive length must not overflow bounds.
+        )
+        for (tail in damagedTails) {
+            val payload = validNal + tail
+            val original = payload.copyOf()
+
+            assertEquals(0, ScreenCodec.lengthPrefixedToAnnexB(payload).size)
+            assertArrayEquals(original, payload)
+        }
+    }
+
+    @Test
+    fun multiByteNalLengthIsRewrittenWithoutChangingNalBytes() {
+        val nal = ByteArray(0x010203) { (it % 251).toByte() }
+        val payload = byteArrayOf(0, 1, 2, 3) + nal
+
+        val converted = ScreenCodec.lengthPrefixedToAnnexB(payload)
+
+        assertSame(payload, converted)
+        assertArrayEquals(byteArrayOf(0, 0, 0, 1) + nal, converted)
+    }
+
     @Test
     fun negotiatedLengthSizesAreHonored() {
         for (lengthSize in listOf(1, 2, 4)) {
