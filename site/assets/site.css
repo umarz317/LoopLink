@@ -5,7 +5,13 @@ a{color:#f47a3a}
 header h1{font-size:40px;margin:16px 0 4px;letter-spacing:-.02em}
 header p{color:#98989f;font-size:18px;margin:0 0 24px}
 .button{display:inline-block;background:#f47a3a;color:#fff;font-weight:600;text-decoration:none;padding:14px 22px;border-radius:12px}
-.shot{display:block;width:100%;height:auto;margin:48px 0;border-radius:14px;border:1px solid #38383a}
+.slides{position:relative;margin:48px 0}
+.track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border-radius:14px;border:1px solid #38383a}
+.track::-webkit-scrollbar{display:none}
+.track img{flex:0 0 100%;width:100%;height:auto;scroll-snap-align:start}
+.slides button{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border:0;border-radius:50%;background:rgba(44,44,46,.85);color:#fff;font-size:24px;line-height:1;cursor:pointer}
+.prev{left:8px}.next{right:8px}
+@media(prefers-reduced-motion:reduce){.track{scroll-behavior:auto}}
 h2{font-size:22px;margin:40px 0 8px}
 ul,ol{padding-left:22px}li{margin:4px 0}
 .muted,footer{color:#98989f;font-size:14px}

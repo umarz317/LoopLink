@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="assets/site.css">
 <meta property="og:title" content="LoopLink">
 <meta property="og:description" content="Wired and wireless CarPlay for Android car head units.">
-<meta property="og:image" content="https://umarz317.github.io/LoopLink/assets/connection.png">
+<meta property="og:image" content="https://umarz317.github.io/LoopLink/assets/screen-1.png">
 </head>
 <body>
 <main>
@@ -21,7 +21,16 @@
     <a class="button" href="https://github.com/umarz317/LoopLink/releases/latest">Download APK</a>
   </header>
 
-  <img class="shot" src="assets/connection.png" width="1024" height="530" alt="LoopLink connection setup screen">
+  <div class="slides" aria-label="Screenshots">
+    <div class="track" tabindex="0">
+      <img src="assets/screen-1.png" width="1024" height="530" alt="Connection setup">
+      <img src="assets/screen-2.png" width="1024" height="530" alt="Settings" loading="lazy">
+      <img src="assets/screen-3.png" width="1024" height="530" alt="Automatic connection and display settings" loading="lazy">
+      <img src="assets/screen-4.png" width="1024" height="530" alt="Advanced settings" loading="lazy">
+    </div>
+    <button class="prev" aria-label="Previous screenshot">‹</button>
+    <button class="next" aria-label="Next screenshot">›</button>
+  </div>
 
   <h2>Works with</h2>
   <ul>
@@ -44,5 +53,10 @@
     <p><a href="https://github.com/umarz317/LoopLink">Source</a> · <a href="https://github.com/umarz317/LoopLink/issues">Report a problem</a></p>
   </footer>
 </main>
+<script>
+const track = document.querySelector('.track');
+for (const [cls, dir] of [['.prev', -1], ['.next', 1]])
+  document.querySelector(cls).onclick = () => track.scrollBy({ left: dir * track.clientWidth, behavior: 'smooth' });
+</script>
 </body>
 </html>
