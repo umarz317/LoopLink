@@ -48,11 +48,11 @@
     <string name="status_waiting_reenumeration">Waiting for iPhone re-enumeration</string>
     <string name="status_attaching_ncm">Attaching NCM/AirPlay network</string>
     <string name="status_failed">Failed: %1$s</string>
-    <string name="msg_car_hotspot_off">The car hotspot “%1$s” is off. Turn it on in the car settings before connecting.</string>
+    <string name="msg_car_hotspot_off">Your car’s hotspot is off. Turn it on in the car settings, then connect.</string>
     <string name="home_public_preview">PUBLIC PREVIEW  ·\u0020\u0020</string>
     <string name="choose_iphone_prefix">Choose iPhone ·\u0020</string>
     <string name="about_public_preview_prefix">Public preview ·\u0020</string>
-    <string name="msg_car_hotspot_connect">LoopLink connects through the car hotspot “%1$s”. Turn it on in the car settings, then connect.</string>
+    <string name="msg_car_hotspot_connect">LoopLink connects through your car’s hotspot. Turn it on in the car settings, then connect.</string>
     <string name="edit_saved_hotspot_prefix">Edit saved hotspot ·\u0020</string>
     <string name="status_ready_for_prefix">Ready for\u0020</string>
     <string name="audio_stream_unavailable">Stream type %1$d is unavailable here (state=%2$s)</string>
@@ -362,4 +362,8 @@
     <string name="hotspot_error_long_name">The hotspot name must be at most 32 bytes</string>
     <string name="hotspot_error_invalid_character">The name or password contains an invalid character</string>
     <string name="hotspot_error_password_length">The hotspot password must be 8–63 characters</string>
+    <string name="advanced">Advanced</string>
+    <string name="advanced_hint">Video quality, audio channels and diagnostic reports. Change these only if asked to.</string>
+    <string name="car_icon_in_carplay">Home icon in CarPlay</string>
+    <string name="car_icon_in_carplay_description">Show the icon that returns to the car’s screen. Changing it reconnects CarPlay.</string>
 </resources>

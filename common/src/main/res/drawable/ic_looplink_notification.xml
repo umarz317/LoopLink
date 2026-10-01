@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- LoopLink mark: a loop that breaks into shrinking links. -->
+<!-- LoopLink mark: a loop that breaks into shrinking links, with a play button at its centre. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
@@ -10,4 +10,6 @@
     <path android:fillColor="#FFFFFFFF" android:pathData="M81.02,76.03 A40.5,40.5 0 0 1 70.25,85.07 L63.75,73.82 A27.5,27.5 0 0 0 71.07,67.68Z" />
     <path android:fillColor="#FFFFFFFF" android:pathData="M65.43,86.36 A39.5,39.5 0 0 1 54.13,89.28 L52.98,78.34 A28.5,28.5 0 0 0 61.14,76.23Z" />
     <path android:fillColor="#FFFFFFFF" android:pathData="M49.33,88.49 A38.5,38.5 0 0 1 40.04,87.19 L42.36,78.49 A29.5,29.5 0 0 0 49.49,79.50Z" />
+    <path android:fillColor="#FFFFFFFF" android:strokeColor="#FFFFFFFF" android:strokeWidth="4"
+        android:strokeLineJoin="round" android:pathData="M44,39 L44,61 L62,50Z" />
 </vector>

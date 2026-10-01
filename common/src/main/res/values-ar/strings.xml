@@ -48,11 +48,11 @@
     <string name="status_waiting_reenumeration">بانتظار إعادة تعداد iPhone</string>
     <string name="status_attaching_ncm">جارٍ توصيل شبكة NCM/AirPlay</string>
     <string name="status_failed">فشل: %1$s</string>
-    <string name="msg_car_hotspot_off">نقطة اتصال السيارة «%1$s» مُغلقة. شغّلها في إعدادات السيارة قبل الاتصال.</string>
+    <string name="msg_car_hotspot_off">نقطة اتصال السيارة مُغلقة. شغّلها في إعدادات السيارة، ثم اتصل.</string>
     <string name="home_public_preview">معاينة عامة  ·\u0020\u0020</string>
     <string name="choose_iphone_prefix">اختر iPhone ·\u0020</string>
     <string name="about_public_preview_prefix">معاينة عامة ·\u0020</string>
-    <string name="msg_car_hotspot_connect">يتصل LoopLink عبر نقطة اتصال السيارة «%1$s». شغّلها في إعدادات السيارة ثم اتصل.</string>
+    <string name="msg_car_hotspot_connect">يتصل LoopLink عبر نقطة اتصال السيارة. شغّلها في إعدادات السيارة، ثم اتصل.</string>
     <string name="edit_saved_hotspot_prefix">تعديل نقطة الاتصال المحفوظة ·\u0020</string>
     <string name="status_ready_for_prefix">جاهز لـ\u0020</string>
     <string name="audio_stream_unavailable">نوع البث %1$d غير متاح هنا (الحالة=%2$s)</string>
@@ -351,4 +351,8 @@
     <string name="hotspot_error_long_name">يجب ألا يتجاوز اسم نقطة الاتصال 32 بايت</string>
     <string name="hotspot_error_invalid_character">يحتوي الاسم أو كلمة المرور على محرف غير صالح</string>
     <string name="hotspot_error_password_length">يجب أن تتكون كلمة مرور نقطة الاتصال من 8 إلى 63 محرفًا</string>
+    <string name="advanced">متقدم</string>
+    <string name="advanced_hint">جودة الفيديو وقنوات الصوت وتقارير التشخيص. غيّرها فقط عند الطلب.</string>
+    <string name="car_icon_in_carplay">أيقونة الرئيسية في CarPlay</string>
+    <string name="car_icon_in_carplay_description">إظهار الأيقونة التي تعود إلى شاشة السيارة. يؤدي التغيير إلى إعادة اتصال CarPlay.</string>
 </resources>

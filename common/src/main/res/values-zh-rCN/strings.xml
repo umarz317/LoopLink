@@ -48,11 +48,11 @@
     <string name="status_waiting_reenumeration">等待 iPhone 重新枚举</string>
     <string name="status_attaching_ncm">正在连接 NCM/AirPlay 网络</string>
     <string name="status_failed">失败：%1$s</string>
-    <string name="msg_car_hotspot_off">车机热点“%1$s”未开启。请在车机设置中开启后再连接。</string>
+    <string name="msg_car_hotspot_off">车机热点未开启。请在车机设置中开启，然后连接。</string>
     <string name="home_public_preview">公开预览  ·\u0020\u0020</string>
     <string name="choose_iphone_prefix">选择 iPhone ·\u0020</string>
     <string name="about_public_preview_prefix">公开预览 ·\u0020</string>
-    <string name="msg_car_hotspot_connect">LoopLink 通过车机热点“%1$s”连接。请在车机设置中开启热点后连接。</string>
+    <string name="msg_car_hotspot_connect">LoopLink 通过车机热点连接。请在车机设置中开启热点，然后连接。</string>
     <string name="edit_saved_hotspot_prefix">编辑已保存的热点 ·\u0020</string>
     <string name="status_ready_for_prefix">已准备连接：</string>
     <string name="audio_stream_unavailable">流类型 %1$d 在此不可用（状态=%2$s）</string>
@@ -362,4 +362,8 @@
     <string name="hotspot_error_long_name">热点名称不能超过32字节</string>
     <string name="hotspot_error_invalid_character">名称或密码包含无效字符</string>
     <string name="hotspot_error_password_length">热点密码长度必须为8至63个字符</string>
+    <string name="advanced">高级</string>
+    <string name="advanced_hint">视频质量、音频通道和诊断报告。仅在需要时更改。</string>
+    <string name="car_icon_in_carplay">CarPlay 中的主页图标</string>
+    <string name="car_icon_in_carplay_description">显示返回车机屏幕的图标。更改后会重新连接 CarPlay。</string>
 </resources>

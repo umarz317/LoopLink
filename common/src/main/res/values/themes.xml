@@ -1,11 +1,22 @@
 <resources>
+    <!-- iOS dark system palette: black canvas, #1C1C1E grouped cells, LoopLink orange tint. -->
     <style name="Theme.Xcertplay" parent="android:Theme.Material.NoActionBar">
         <item name="android:fontFamily">sans</item>
         <item name="android:colorAccent">#F47A3A</item>
         <item name="android:windowLightStatusBar">false</item>
-        <item name="android:navigationBarColor">#07090D</item>
-        <item name="android:statusBarColor">#07090D</item>
-        <item name="android:windowBackground">#07090D</item>
+        <item name="android:navigationBarColor">#000000</item>
+        <item name="android:statusBarColor">#000000</item>
+        <item name="android:windowBackground">#000000</item>
         <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:alertDialogTheme">@style/Theme.Xcertplay.Dialog</item>
+    </style>
+
+    <style name="Theme.Xcertplay.Dialog" parent="android:Theme.Material.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/dp_dialog_background</item>
+        <item name="android:colorBackground">#1C1C1E</item>
+        <item name="android:colorAccent">#F47A3A</item>
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:textColorSecondary">#98989F</item>
+        <item name="android:backgroundDimAmount">0.6</item>
     </style>
 </resources>
