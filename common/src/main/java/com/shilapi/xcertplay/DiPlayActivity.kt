@@ -14,8 +14,6 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.InsetDrawable
-import android.media.AudioFormat
-import android.media.AudioTrack
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -54,9 +52,6 @@ class DiPlayActivity : ComponentActivity() {
     private var initialLaunch = true
     private var notificationTransport = true
     private var exportInProgress = false
-    private var navigationStreamType = 14
-    private var testToneTrack: AudioTrack? = null
-    private var toneStop: Runnable? = null
     private var exportButton: Button? = null
     private val notificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
         connect(notificationTransport)
@@ -845,89 +840,6 @@ class DiPlayActivity : ComponentActivity() {
     private fun openSystem(intent: Intent) { runCatching { startActivity(intent) }.onFailure { toast(getString(R.string.open_this_setting_from_your_car_s_settings_app)) } }
     private fun toast(message: String) { Toast.makeText(this, message, Toast.LENGTH_LONG).show() }
 
-    private fun playTestTone(streamType: Int) {
-        toneStop?.let { handler.removeCallbacks(it) }
-        toneStop = null
-        testToneTrack?.let { runCatching { it.stop(); it.release() } }
-        testToneTrack = null
-        var candidate: AudioTrack? = null
-        val track = try {
-            val pcm = assets.open("navigation_test.pcm").use { it.readBytes() }
-            AudioTrack(streamType, 44100, AudioFormat.CHANNEL_OUT_MONO,
-                AudioFormat.ENCODING_PCM_16BIT, pcm.size, AudioTrack.MODE_STREAM).also {
-                candidate = it
-                check(it.state == AudioTrack.STATE_INITIALIZED)
-                check(it.write(pcm, 0, pcm.size) == pcm.size)
-                it.play()
-            }
-        } catch (error: Exception) {
-            val state = candidate?.state ?: AudioTrack.STATE_UNINITIALIZED
-            candidate?.let { runCatching { it.release() } }
-            Log.w("DiPlay", "playTestTone streamType=$streamType unavailable", error)
-            toast(getString(R.string.audio_stream_unavailable, streamType, state))
-            return
-        }
-        Log.i("DiPlay", "playTestTone streamType=$streamType state=${track.state} playState=${track.playState}")
-        testToneTrack = track
-        val stop = Runnable {
-            track.stop()
-            track.release()
-            if (testToneTrack === track) testToneTrack = null
-            toneStop = null
-        }
-        toneStop = stop
-        handler.postDelayed(stop, 4500)
-    }
-
-    private val channelButtons = mutableListOf<Button>()
-
-    private fun paintChannel(index: Int, selected: Boolean) {
-        val target = channelButtons.getOrNull(index) ?: return
-        target.isSelected = selected
-        target.setTextColor(if (selected) BG else TEXT)
-        target.background = android.graphics.drawable.RippleDrawable(
-            ColorStateList.valueOf(0x33F47A3A),
-            rounded(if (selected) ACCENT else SURFACE, if (selected) ACCENT else BORDER),
-            null
-        )
-    }
-
-    private fun channelSelector(): ViewGroup {
-        channelButtons.clear()
-        val grid = GridLayout(this).apply {
-            columnCount = 7
-            rowCount = 3
-            setPadding(0, dp(8), 0, dp(8))
-        }
-        for (i in 0..20) {
-            val btn = Button(this).apply {
-                text = i.toString()
-                isAllCaps = false
-                textSize = 16f
-                minHeight = dp(48)
-                stateListAnimator = null
-                setOnClickListener {
-                    val previous = navigationStreamType
-                    navigationStreamType = i
-                    if (previous != i) {
-                        paintChannel(previous, false)
-                        paintChannel(i, true)
-                    }
-                    playTestTone(i)
-                }
-            }
-            val params = GridLayout.LayoutParams().apply {
-                width = 0
-                height = dp(48)
-                columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
-                setMargins(dp(4), dp(4), dp(4), dp(4))
-            }
-            grid.addView(btn, params)
-            channelButtons.add(btn)
-            paintChannel(i, i == navigationStreamType)
-        }
-        return grid
-    }
     private fun version() = packageManager.getPackageInfo(packageName, 0).versionName ?: "0.1.0-beta.1"
     private fun languageSettings(content: LinearLayout) {
         section(content, getString(R.string.language_section_title), R.drawable.ic_dp_language) { card ->

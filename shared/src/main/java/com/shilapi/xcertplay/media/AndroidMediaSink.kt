@@ -130,7 +130,6 @@ class AndroidMediaSink(
     private val mediaChannel: Int = 0,
     private val navigationChannel: Int = 0,
     context: Context? = null,
-    private val navigationStreamType: Int = AudioChannelMapper.DEFAULT_NAVIGATION_STREAM_TYPE,
     onScreenStreamActiveChanged: ((Int, Boolean) -> Unit)? = null,
     private val mediaBufferMillis: Int = MediaAudioBuffer.DEFAULT_MILLIS,
     private val onAudioDiagnostic: (String) -> Unit = {},
@@ -297,7 +296,6 @@ class AndroidMediaSink(
             mediaChannel,
             navigationChannel,
             audioFocusCoordinator,
-            navigationStreamType,
             mediaBufferMillis,
             onAudioDiagnostic,
         ).also { audioRenderers[id] = it }
@@ -671,7 +669,6 @@ private class AudioRenderer(
     private val mediaChannel: Int,
     private val navigationChannel: Int,
     private val audioFocusCoordinator: AudioFocusCoordinator,
-    private val navigationStreamType: Int,
     private val mediaBufferMillis: Int,
     private val report: (String) -> Unit,
 ) : Closeable {
@@ -958,20 +955,6 @@ private class AudioRenderer(
         .setEncoding(encoding)
         .build()
 
-    private fun streamType(): Int {
-        val mode = if (advancedAudioChannelMapping) {
-            AudioChannelMappingMode.AUTOMOTIVE_BUS
-        } else {
-            AudioChannelMappingMode.MOBILE_COMPATIBLE
-        }
-        return AudioChannelMapper.map(
-            audioType = format.audioType,
-            payloadType = format.payloadType,
-            mode = mode,
-            navigationStreamType = navigationStreamType,
-        ).streamType
-    }
-
     private fun aacAudioSpecificConfig(): ByteArray {
         val frequencyIndex = MediaCodecSupport.aacFrequencyIndex(format.sampleRate)
         val value = (AAC_OBJECT_TYPE_LC shl 11) or
@@ -983,7 +966,10 @@ private class AudioRenderer(
     private fun usageFor(channel: AudioChannel): Int = when (channel) {
         AudioChannel.MEDIA -> AudioAttributes.USAGE_MEDIA
         AudioChannel.PHONE -> AudioAttributes.USAGE_VOICE_COMMUNICATION
-        AudioChannel.ASSISTANT -> AudioAttributes.USAGE_ASSISTANT
+        // Many aftermarket head units give USAGE_ASSISTANT its own, quieter volume that the
+        // volume knob does not reach, so Siri plays on the media volume unless the advanced
+        // automotive mapping is on. It keeps the assistant buffer and focus either way.
+        AudioChannel.ASSISTANT -> if (advancedAudioChannelMapping) AudioAttributes.USAGE_ASSISTANT else AudioAttributes.USAGE_MEDIA
         AudioChannel.NAVIGATION -> AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE
     }
 
