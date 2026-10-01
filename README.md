@@ -2,7 +2,9 @@
 
 **Use CarPlay from your iPhone in a browser on your Mac.** LoopLink is an experimental macOS CarPlay receiver: connect the iPhone with a USB cable and the CarPlay screen appears in Chrome, with touch, Home/Back, media keys and Siri.
 
-![LoopLink showing CarPlay Settings from an iPhone in Chrome](asset/screenshot.jpg)
+![LoopLink browser connection screen with the play-button logo](asset/screenshot.jpg)
+
+Current browser UI, captured without an iPhone connected.
 
 > **Fork notice.** LoopLink is a fork of [DiPlay](https://github.com/shihabal3amri/DiPlay) by shihabal3amri, which is itself based on [xcertplay](https://github.com/shilapi/xcertplay) by shilapi. The AirPlay, iAP2 and accessory-authentication code comes from those projects. LoopLink removes DiPlay's Android head-unit app and replaces it with a Mac receiver and browser display. It is an independent project and is not affiliated with or endorsed by the DiPlay or xcertplay authors. For the Android receiver, use [DiPlay](https://github.com/shihabal3amri/DiPlay).
 

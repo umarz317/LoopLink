@@ -4,6 +4,10 @@
 
 Experimental macOS CarPlay receiver with a localhost browser display. The iPhone connects over a USB cable; no CarPlay dongle is used. The AirPlay, iAP2 and accessory-authentication code under `src/main/kotlin/com/shilapi/xcertplay/` comes from DiPlay and xcertplay (see the [root README](../README.md)).
 
+![LoopLink browser connection screen with the play-button logo](../asset/screenshot.jpg)
+
+Current browser UI, captured without an iPhone connected.
+
 ## Run
 
 Requires macOS, Xcode Command Line Tools, Java 17 or newer and libimobiledevice:
