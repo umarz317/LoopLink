@@ -148,7 +148,14 @@ class DiPlayActivity : ComponentActivity() {
         scroll.addView(content, FrameLayout.LayoutParams(width, -2, Gravity.CENTER_HORIZONTAL))
         val header = row().apply { gravity = Gravity.CENTER_VERTICAL; minimumHeight = dp(56) }
         if (page == "home") {
-            header.addView(space(1), LinearLayout.LayoutParams(0, 1, 1f))
+            // Logo and status share the top bar so the tiles get the rest of a short screen.
+            header.addView(ImageView(this).apply {
+                setImageResource(R.drawable.ic_looplink); contentDescription = getString(R.string.diplay)
+            }, LinearLayout.LayoutParams(dp(40), dp(40)).apply { marginEnd = dp(16) })
+            status = label(getString(R.string.ready_when_you_are), 22, TEXT, weight = 700).apply {
+                compoundDrawablePadding = dp(10); maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END
+            }
+            header.addView(status, LinearLayout.LayoutParams(0, -2, 1f).apply { marginEnd = dp(12) })
             // In the header, not under the tiles, so it never pushes them off a short screen.
             disconnectButton = button(getString(R.string.disconnect), false, RED, radius = 24, icon = R.drawable.ic_dp_close) {
                 disconnectButton?.isEnabled = false
@@ -167,7 +174,7 @@ class DiPlayActivity : ComponentActivity() {
             }, LinearLayout.LayoutParams(-2, dp(48)))
         }
         content.addView(header)
-        content.addView(space(if (page == "home") (if (short) 4 else 28) else 12))
+        content.addView(space(if (page == "home") (if (short) 8 else 16) else 12))
         when (page) {
             "connection" -> connectionSetup(content)
             "settings" -> settings(content)
@@ -179,48 +186,41 @@ class DiPlayActivity : ComponentActivity() {
         refreshStatus()
     }
 
-    // Glanceable in a car: a status line and three large icon tiles. Details live in Settings.
+    // Glanceable in a car: three large icon tiles under a status bar. Details live in Settings.
     private fun home(content: LinearLayout) {
-        // Head units range from ~500dp to 1000dp tall; scale the stack so the tiles always fit.
+        // Head units range from ~500dp to 1000dp tall; the tiles take the height left under the top bar.
         val height = resources.configuration.screenHeightDp
-        val compact = height < 640
-        val body = column().apply { gravity = Gravity.CENTER_HORIZONTAL }
-        body.addView(ImageView(this).apply {
-            setImageResource(R.drawable.ic_looplink)
-            contentDescription = getString(R.string.diplay)
-            scaleType = ImageView.ScaleType.FIT_CENTER
-        }, LinearLayout.LayoutParams(dp(if (compact) 52 else 80), dp(if (compact) 52 else 80)))
-        status = label(getString(R.string.ready_when_you_are), if (compact) 26 else 30, TEXT, weight = 700).apply {
-            gravity = Gravity.CENTER; setPadding(0, dp(if (compact) 8 else 16), 0, dp(if (compact) 16 else 28)); compoundDrawablePadding = dp(14)
-        }
-        body.addView(status, LinearLayout.LayoutParams(-2, -2))
+        val body = column().apply { gravity = Gravity.CENTER }
         val actions = column()
         // Problems sit above the tiles they block, as one notice each, never as loose coloured text.
         setupError?.let { actions.addView(notice(it)) }
         if (carHotspotOff()) actions.addView(notice(getString(R.string.msg_car_hotspot_off), getString(R.string.open_car_hotspot_settings)) { openCarWifiSettings() })
         val tiles = row()
-        val tileHeight = dp((height * .34f).toInt().coerceIn(128, 184))
-        connectButton = homeTile(getString(R.string.connect_phone), R.drawable.ic_dp_connection, true) {
+        val tileHeight = dp(((height - 140) * .7f).toInt().coerceIn(120, 220))
+        connectButton = homeTile(getString(R.string.connect_phone), R.drawable.ic_dp_connection, tileHeight, true) {
             if (CarPlayBackgroundSession.hasSession()) openProjection()
             else connect(true)
         }
-        tiles.addView(connectButton, LinearLayout.LayoutParams(0, tileHeight, 1.4f))
+        tiles.addView(connectButton, LinearLayout.LayoutParams(0, tileHeight, 1f))
         tiles.addView(space(16), LinearLayout.LayoutParams(dp(16), 1))
-        tiles.addView(homeTile(getString(R.string.connect_with_usb), R.drawable.ic_dp_usb) { connect(false) }, LinearLayout.LayoutParams(0, tileHeight, 1f))
+        tiles.addView(homeTile(getString(R.string.connect_with_usb), R.drawable.ic_dp_usb, tileHeight) { connect(false) }, LinearLayout.LayoutParams(0, tileHeight, 1f))
         tiles.addView(space(16), LinearLayout.LayoutParams(dp(16), 1))
-        tiles.addView(homeTile(getString(R.string.settings), R.drawable.ic_dp_settings) { page = "settings"; render() }, LinearLayout.LayoutParams(0, tileHeight, 1f))
+        tiles.addView(homeTile(getString(R.string.settings), R.drawable.ic_dp_settings, tileHeight) { page = "settings"; render() }, LinearLayout.LayoutParams(0, tileHeight, 1f))
         actions.addView(tiles)
-        body.addView(actions, LinearLayout.LayoutParams(minOf(dp(880), dp(resources.configuration.screenWidthDp) - dp(64)), -2))
-        content.addView(body)
+        body.addView(actions, LinearLayout.LayoutParams(minOf(dp(960), dp(resources.configuration.screenWidthDp) - dp(64)), -2))
+        // Fill the space under the header and centre the tiles in it.
+        content.addView(body, LinearLayout.LayoutParams(-1, 0, 1f))
     }
 
     /** Large icon-over-label tile for the home screen. */
-    private fun homeTile(title: String, icon: Int, primary: Boolean = false, click: () -> Unit) =
+    private fun homeTile(title: String, icon: Int, height: Int, primary: Boolean = false, click: () -> Unit) =
         button(title, primary, if (primary) Color.WHITE else TEXT, radius = 24, click = click).apply {
             textSize = 19f; contentDescription = title
-            val compact = resources.configuration.screenHeightDp < 640
-            setPadding(dp(12), dp(if (compact) 12 else 24), dp(12), dp(if (compact) 10 else 20)); compoundDrawablePadding = dp(if (compact) 8 else 16)
-            setCompoundDrawablesRelative(null, icon(icon, if (primary) Color.WHITE else ACCENT, if (compact) 44 else 56), null, null)
+            // Pinned from the top so icons line up even when one label wraps to two lines.
+            gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
+            val iconSize = (height / resources.displayMetrics.density * .3f).toInt().coerceIn(40, 64)
+            setPadding(dp(12), (height * .2f).toInt(), dp(12), dp(8)); compoundDrawablePadding = dp(12)
+            setCompoundDrawablesRelative(null, icon(icon, if (primary) Color.WHITE else ACCENT, iconSize), null, null)
         }
 
     private fun settings(content: LinearLayout) {
@@ -359,70 +359,88 @@ class DiPlayActivity : ComponentActivity() {
         openSystem(wifi)
     }
 
+    // Three short steps; each is a picture choice or a single row, with the details kept in dialogs.
     private fun connectionSetup(content: LinearLayout) {
-        content.addView(largeTitle(getString(R.string.connection_setup), 40))
-        content.addView(label(getString(R.string.set_up_once_your_details_stay_saved_for_the_next_drive_cha), 17, MUTED).apply { setPadding(0, dp(8), 0, dp(24)) })
-        section(content, getString(R.string.s_1_choose_your_connection)) { card -> wirelessLinkControls(card) }
-        section(content, getString(R.string.s_2_pair_your_iphone)) { card ->
-            card.addView(label(getString(R.string.keep_bluetooth_and_wi_fi_on_your_iphone_pair_with_the_car), 16, MUTED))
+        content.addView(largeTitle(getString(R.string.connection_setup), 40).apply { setPadding(0, 0, 0, dp(8)) })
+        section(content, getString(R.string.s_1_choose_your_connection), R.drawable.ic_dp_connection) { card -> wirelessLinkControls(card) }
+        section(content, getString(R.string.s_2_pair_your_iphone), R.drawable.ic_dp_bluetooth) { card ->
             card.addView(valueRow(getString(R.string.choose_iphone), DiPlayPreferences.phoneName(this), R.drawable.ic_dp_phone) { choosePhone() }.first)
-            card.addView(button(getString(R.string.review_app_permissions), false, icon = R.drawable.ic_dp_permissions) {
+            card.addView(valueRow(getString(R.string.review_app_permissions), "", R.drawable.ic_dp_permissions) {
                 openSystem(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")))
-            }, matchButton(12, 60))
+            }.first)
         }
-        section(content, getString(R.string.s_3_connect)) { card ->
-            card.addView(label(getString(R.string.return_from_car_settings_to_diplay_then_connect_accept_the), 16, MUTED))
-            card.addView(button(getString(R.string.connect_phone), true, icon = R.drawable.ic_dp_phone) { connect(true) }, matchButton(12, 60))
-        }
-        section(content, getString(R.string.prefer_a_cable)) { card ->
-            card.addView(label(getString(R.string.use_a_usb_data_cable_and_the_car_s_usb_data_port_unlock_yo), 16, MUTED))
-            card.addView(button(getString(R.string.connect_with_usb), false, icon = R.drawable.ic_dp_usb) { connect(false) }, matchButton(12, 60))
+        section(content, getString(R.string.s_3_connect), R.drawable.ic_dp_phone) { card ->
+            card.addView(row().apply {
+                setPadding(0, dp(10), 0, dp(10))
+                addView(button(getString(R.string.connect_phone), true, icon = R.drawable.ic_dp_connection) { connect(true) }, LinearLayout.LayoutParams(0, dp(64), 1f))
+                addView(space(12), LinearLayout.LayoutParams(dp(12), 1))
+                addView(button(getString(R.string.connect_with_usb), false, TEXT, icon = R.drawable.ic_dp_usb) { connect(false) }, LinearLayout.LayoutParams(0, dp(64), 1f))
+            })
         }
     }
 
     private fun wirelessLinkControls(parent: LinearLayout) {
         val mode = if (pendingCarHotspotSetup) WirelessHotspotMode.MANUAL else AirPlayPersistence.loadWirelessHotspotMode(this)
-        val modes = listOf(WirelessHotspotMode.MANUAL, WirelessHotspotMode.WIFI_P2P)
-        val titles = listOf(getString(R.string.built_in_car_hotspot), getString(R.string.wifi_direct))
-        val descriptions = listOf(
-            getString(R.string.hotspot_mode_manual_desc),
-            getString(R.string.hotspot_mode_p2p_desc)
-        )
-        val wide = resources.configuration.screenWidthDp >= 850
-        val choices = if (wide) row().apply { gravity = Gravity.TOP } else column()
+        val choices = row().apply { setPadding(0, dp(10), 0, dp(10)); isBaselineAligned = false }
+        choices.addView(modeTile(R.drawable.ic_dp_hotspot, getString(R.string.built_in_car_hotspot), getString(R.string.hotspot_mode_manual_desc), mode == WirelessHotspotMode.MANUAL) {
+            pendingCarHotspotSetup = true
+            render()
+        }, LinearLayout.LayoutParams(0, -2, 1f))
+        choices.addView(space(12), LinearLayout.LayoutParams(dp(12), 1))
+        choices.addView(modeTile(R.drawable.ic_dp_connection, getString(R.string.wifi_direct), getString(R.string.hotspot_mode_p2p_desc), mode == WirelessHotspotMode.WIFI_P2P) {
+            pendingCarHotspotSetup = false
+            applyWirelessLink(WirelessHotspotMode.WIFI_P2P)
+        }, LinearLayout.LayoutParams(0, -2, 1f))
         parent.addView(choices)
-        modes.forEachIndexed { index, candidate ->
-            val option = column()
-            choices.addView(option, if (wide) LinearLayout.LayoutParams(0, -2, 1f).apply {
-                if (index > 0) marginStart = dp(16)
-            } else LinearLayout.LayoutParams(-1, -2))
-            option.addView(button("${if (mode == candidate) "✓  " else ""}${titles[index]}", mode == candidate) {
-                if (candidate == WirelessHotspotMode.MANUAL) {
-                    pendingCarHotspotSetup = true
-                    render()
-                } else {
-                    pendingCarHotspotSetup = false
-                    applyWirelessLink(candidate)
-                }
-            }, matchButton(12, 60))
-            option.addView(label(descriptions[index], 15, MUTED).apply { setPadding(0, dp(6), 0, dp(12)) })
-        }
         if (mode == WirelessHotspotMode.MANUAL) {
-            parent.addView(label(getString(R.string.hotspot_setup), 22, TEXT, true))
-            parent.addView(label(getString(R.string.s_1_open_car_hotspot_settings_turn_the_hotspot_on_and_sele), 16, MUTED).apply { setPadding(0, dp(8), 0, dp(12)) })
-            parent.addView(button(getString(R.string.open_car_hotspot_settings), false, icon = R.drawable.ic_dp_hotspot) { openCarWifiSettings() }, matchButton(0, 60))
-            parent.addView(button(if (pendingCarHotspotSetup) getString(R.string.save_hotspot_details_and_use_this_mode) else "${getString(R.string.edit_saved_hotspot_prefix)}${storedSsid()}", false) {
+            val saveDetails = {
                 askHotspotCredentials { ssid, password ->
                     saveHotspotCredentials(ssid, password)
                     pendingCarHotspotSetup = false
                     applyWirelessLink(WirelessHotspotMode.MANUAL)
                 }
-            }, matchButton(12, 60))
-            parent.addView(label(if (pendingCarHotspotSetup) getString(R.string.finish_setup_save_your_hotspot_details_to_use_this_mode) else if (carHotspotOff()) getString(R.string.hotspot_details_off) else getString(R.string.hotspot_details_saved), 15, if (carHotspotOff()) WARNING else MUTED).apply { setPadding(0, dp(12), 0, 0) })
+            }
+            if (pendingCarHotspotSetup || storedSsid().isBlank()) {
+                parent.addView(button(getString(R.string.save_hotspot_details_and_use_this_mode), true, icon = R.drawable.ic_dp_hotspot) { saveDetails() }, matchButton(4, 60))
+            } else {
+                parent.addView(valueRow(getString(R.string.hotspot_name), storedSsid(), R.drawable.ic_dp_hotspot) { saveDetails() }.first)
+            }
+            parent.addView(button(getString(R.string.open_car_hotspot_settings), false, icon = R.drawable.ic_dp_settings) { openCarWifiSettings() }, matchButton(0, 60))
+            if (carHotspotOff()) parent.addView(notice(getString(R.string.hotspot_details_off)).apply {
+                background = GradientDrawable().apply { setColor(FILL); cornerRadius = dp(16).toFloat() }
+            })
         } else {
-            parent.addView(label(getString(R.string.turn_the_car_s_wi_fi_switch_on_allow_location_nearby_devic), 16, MUTED))
-            parent.addView(button(getString(R.string.open_car_wi_fi_settings), false, icon = R.drawable.ic_dp_connection) { openCarClientWifiSettings() }, matchButton(12, 60))
+            parent.addView(button(getString(R.string.open_car_wi_fi_settings), false, icon = R.drawable.ic_dp_settings) { openCarClientWifiSettings() }, matchButton(0, 60))
         }
+    }
+
+    /** Selectable picture card for a connection type; the chosen one is outlined and checked. */
+    private fun modeTile(icon: Int, title: String, description: String, selected: Boolean, click: () -> Unit) = column().apply {
+        background = android.graphics.drawable.RippleDrawable(ColorStateList.valueOf(PRESSED), GradientDrawable().apply {
+            setColor(FILL); cornerRadius = dp(18).toFloat()
+            if (selected) setStroke(dp(2), ACCENT)
+        }, null)
+        // A shared minimum height keeps the two cards level when one description wraps.
+        setPadding(dp(18), dp(16), dp(18), dp(18)); minimumHeight = dp(150)
+        isClickable = true; isFocusable = true; isSelected = selected
+        contentDescription = "$title. $description"
+        setOnClickListener { click() }
+        addView(row().apply {
+            gravity = Gravity.CENTER_VERTICAL
+            addView(ImageView(this@DiPlayActivity).apply {
+                setImageResource(icon); imageTintList = ColorStateList.valueOf(ACCENT)
+                importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+            }, LinearLayout.LayoutParams(dp(36), dp(36)))
+            addView(space(1), LinearLayout.LayoutParams(0, 1, 1f))
+            if (selected) addView(ImageView(this@DiPlayActivity).apply {
+                setImageResource(R.drawable.ic_dp_check); imageTintList = ColorStateList.valueOf(Color.WHITE)
+                background = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(ACCENT) }
+                setPadding(dp(4), dp(4), dp(4), dp(4))
+                importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+            }, LinearLayout.LayoutParams(dp(28), dp(28)))
+        })
+        addView(label(title, 18, TEXT, weight = 600).apply { setPadding(0, dp(12), 0, dp(4)) })
+        addView(label(description, 14, MUTED))
     }
 
     private fun mediaChannelControl(parent: LinearLayout) {
