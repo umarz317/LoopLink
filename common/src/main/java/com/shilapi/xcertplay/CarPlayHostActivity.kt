@@ -631,7 +631,8 @@ class CarPlayHostActivity : ComponentActivity() {
     }
 
     private fun buildContentView(): View {
-        val root = FrameLayout(this).apply { setBackgroundColor(Color.rgb(7, 9, 13)) }
+        val compact = resources.configuration.screenHeightDp < 640
+        val root = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
         val video = TextureView(this).apply {
             isOpaque = false
             surfaceTextureListener = textureListener
@@ -645,50 +646,60 @@ class CarPlayHostActivity : ComponentActivity() {
         val panel = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
-            setPadding(dp(32), dp(32), dp(32), dp(32))
-            setBackgroundColor(Color.rgb(7, 9, 13))
+            setPadding(dp(32), dp(if (compact) 16 else 32), dp(32), dp(if (compact) 16 else 32))
+            setBackgroundColor(Color.BLACK)
             isClickable = true
         }
         panel.addView(ImageView(this).apply {
-            setImageResource(R.drawable.ic_looplink); contentDescription = getString(R.string.carplay)
-        }, LinearLayout.LayoutParams(dp(88), dp(88)))
-        panel.addView(TextView(this).apply {
-            text = getString(R.string.diplay); textSize = 34f; setTextColor(Color.rgb(232, 236, 243))
-            gravity = Gravity.CENTER; setPadding(0, dp(18), 0, dp(14))
-            typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+            setImageResource(R.drawable.ic_looplink); contentDescription = getString(R.string.diplay)
+        }, LinearLayout.LayoutParams(dp(if (compact) 64 else 88), dp(if (compact) 64 else 88)))
+        // The logo already names the app; short screens skip the title to keep everything on screen.
+        if (!compact) panel.addView(TextView(this).apply {
+            text = getString(R.string.diplay); textSize = 34f; setTextColor(Color.WHITE)
+            gravity = Gravity.CENTER; setPadding(0, dp(18), 0, 0)
+            typeface = Typeface.create(Typeface.SANS_SERIF, 700, false)
         })
         val stage = TextView(this).apply {
-            text = getString(R.string.getting_carplay_ready); textSize = 22f; gravity = Gravity.CENTER
-            setTextColor(Color.rgb(232, 236, 243))
+            text = getString(R.string.getting_carplay_ready); textSize = if (compact) 20f else 22f; gravity = Gravity.CENTER
+            setTextColor(Color.WHITE); setPadding(0, dp(if (compact) 12 else 14), 0, 0)
+            typeface = Typeface.create(Typeface.SANS_SERIF, 600, false)
         }
         panel.addView(stage)
         panel.addView(TextView(this).apply {
             text = if (wirelessEnabled) getString(R.string.keep_your_iphone_nearby_with_bluetooth_and_wi_fi_on_allow)
                 else getString(R.string.use_a_usb_data_cable_and_unlock_your_iphone_allow_trust_an)
-            textSize = 17f; gravity = Gravity.CENTER; setTextColor(Color.rgb(139, 148, 167))
-            setPadding(0, dp(14), 0, dp(24))
+            textSize = if (compact) 15f else 17f; gravity = Gravity.CENTER; setTextColor(Color.rgb(152, 152, 159))
+            setPadding(0, dp(if (compact) 8 else 14), 0, dp(if (compact) 16 else 24))
         })
         panel.addView(Button(this).apply {
             text = getString(R.string.reset_carplay_wi_fi); isAllCaps = false; textSize = 18f
-            visibility = View.GONE
+            visibility = View.GONE; stateListAnimator = null
+            setTextColor(Color.rgb(244, 122, 58)); typeface = Typeface.create(Typeface.SANS_SERIF, 600, false)
+            background = GradientDrawable().apply { setColor(Color.rgb(44, 44, 46)); cornerRadius = dp(18).toFloat() }
             setOnClickListener { showDiPlayHome("wireless-recovery") }
             wifiRecoveryButton = this
-        }, LinearLayout.LayoutParams(dp(300), dp(64)).apply { bottomMargin = dp(12) })
+        }, LinearLayout.LayoutParams(dp(300), dp(if (compact) 52 else 64)).apply { bottomMargin = dp(12) })
         panel.addView(Button(this).apply {
             text = getString(R.string.back_to_diplay); isAllCaps = false; textSize = 18f
-            setTextColor(Color.rgb(43, 18, 6))
-            background = GradientDrawable().apply { setColor(Color.rgb(244, 122, 58)); cornerRadius = dp(20).toFloat() }
+            setTextColor(Color.WHITE); stateListAnimator = null
+            typeface = Typeface.create(Typeface.SANS_SERIF, 600, false)
+            background = GradientDrawable().apply { setColor(Color.rgb(244, 122, 58)); cornerRadius = dp(18).toFloat() }
             setOnClickListener { showDiPlayHome() }
-        }, LinearLayout.LayoutParams(dp(300), dp(64)))
+        }, LinearLayout.LayoutParams(dp(300), dp(if (compact) 52 else 64)))
         panel.addView(TextView(this).apply {
             text = getString(R.string.in_carplay_swipe_down_with_three_fingers_to_open_diplay_se)
-            textSize = 13f; gravity = Gravity.CENTER; setTextColor(Color.rgb(139, 148, 167)); setPadding(0, dp(20), 0, 0)
+            textSize = 13f; gravity = Gravity.CENTER; setTextColor(Color.rgb(152, 152, 159)); setPadding(0, dp(if (compact) 12 else 20), 0, 0)
         })
-        root.addView(panel, FrameLayout.LayoutParams(-1, -1))
+        // Scrolls only if a screen is shorter still; centred content never gets cut at both edges.
+        val panelScroll = ScrollView(this).apply {
+            isFillViewport = true; isVerticalScrollBarEnabled = false; setBackgroundColor(Color.BLACK)
+            addView(panel, FrameLayout.LayoutParams(-1, -1))
+        }
+        root.addView(panelScroll, FrameLayout.LayoutParams(-1, -1))
         videoView = video
         gestureOverlay = gestureLayer
         stageStatusView = stage
-        connectionPanel = panel
+        connectionPanel = panelScroll
         updateDebugOverlays()
         return root
     }
@@ -3486,13 +3497,13 @@ class CarPlayHostActivity : ComponentActivity() {
         const val THREE_FINGER_SWIPE_DISTANCE_DP = 72
         const val THREE_FINGER_SWIPE_DIRECTION_RATIO = 1.15f
         const val MAX_SETTINGS_MENU_WIDTH_PX = 1200
-        val MENU_BACKGROUND = Color.rgb(17, 21, 29)
-        val MENU_SECONDARY = Color.rgb(139, 148, 167)
+        val MENU_BACKGROUND = Color.rgb(28, 28, 30)
+        val MENU_SECONDARY = Color.rgb(152, 152, 159)
         val MENU_ACCENT = Color.rgb(244, 122, 58)
         val MENU_ACCENT_TRACK = Color.rgb(150, 72, 32)
-        val MENU_TRACK_OFF = Color.rgb(35, 43, 56)
-        val MENU_BUTTON_TEXT = Color.rgb(43, 18, 6)
-        val MENU_DANGER = Color.rgb(190, 45, 45)
+        val MENU_TRACK_OFF = Color.rgb(57, 57, 61)
+        val MENU_BUTTON_TEXT = Color.WHITE
+        val MENU_DANGER = Color.rgb(255, 69, 58)
         val NO_VIDEO_BACKGROUND = Color.rgb(0x16, 0x16, 0x18)
     }
 

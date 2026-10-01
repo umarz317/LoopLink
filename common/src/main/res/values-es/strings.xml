@@ -48,11 +48,11 @@
     <string name="status_waiting_reenumeration">Esperando la reenumeración del iPhone</string>
     <string name="status_attaching_ncm">Conectando la red NCM/AirPlay</string>
     <string name="status_failed">Error: %1$s</string>
-    <string name="msg_car_hotspot_off">El punto de acceso del coche «%1$s» está apagado. Actívalo en la configuración del coche antes de conectarte.</string>
+    <string name="msg_car_hotspot_off">El punto de acceso del coche está apagado. Actívalo en la configuración del coche y luego conéctate.</string>
     <string name="home_public_preview">VISTA PREVIA PÚBLICA  ·\u0020\u0020</string>
     <string name="choose_iphone_prefix">Elegir iPhone ·\u0020</string>
     <string name="about_public_preview_prefix">Vista previa ·\u0020</string>
-    <string name="msg_car_hotspot_connect">LoopLink se conecta a través del punto de acceso del coche «%1$s». Actívalo en la configuración del coche y luego conéctate.</string>
+    <string name="msg_car_hotspot_connect">LoopLink se conecta a través del punto de acceso del coche. Actívalo en la configuración del coche y luego conéctate.</string>
     <string name="edit_saved_hotspot_prefix">Editar punto de acceso guardado ·\u0020</string>
     <string name="status_ready_for_prefix">Listo para\u0020</string>
     <string name="audio_stream_unavailable">El tipo de flujo %1$d no está disponible aquí (estado=%2$s)</string>
@@ -351,4 +351,6 @@
     <string name="hotspot_error_long_name">El nombre del punto de acceso no debe superar los 32 bytes</string>
     <string name="hotspot_error_invalid_character">El nombre o la contraseña contiene un carácter no válido</string>
     <string name="hotspot_error_password_length">La contraseña del punto de acceso debe tener entre 8 y 63 caracteres</string>
+    <string name="advanced">Avanzado</string>
+    <string name="advanced_hint">Calidad de vídeo, canales de audio e informes de diagnóstico. Cámbialos solo si te lo piden.</string>
 </resources>

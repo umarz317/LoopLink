@@ -74,7 +74,9 @@ object AirPlayPersistence {
 
     const val DEFAULT_MANUFACTURER = "LoopLink"
     const val DEFAULT_MODEL = "LoopLink"
-    const val DEFAULT_OEM_LABEL = "BYD"
+    const val DEFAULT_OEM_LABEL = "Car"
+    // Earlier builds saved this default; it reads as a brand on non-BYD cars.
+    private const val LEGACY_OEM_LABEL = "BYD"
     const val DEFAULT_MFI_I2C_PATH = "/dev/i2c-1"
 
     fun loadDisplayScaleTenths(context: Context): Int {
@@ -368,7 +370,7 @@ object AirPlayPersistence {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
             .getString(KEY_OEM_LABEL, DEFAULT_OEM_LABEL)
             // iOS hides the car icon without a label.
-            .orEmpty().ifBlank { DEFAULT_OEM_LABEL }
+            .orEmpty().takeUnless { it.isBlank() || it == LEGACY_OEM_LABEL } ?: DEFAULT_OEM_LABEL
 
     fun saveOemLabel(context: Context, oemLabel: String) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()

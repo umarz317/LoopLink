@@ -48,11 +48,11 @@
     <string name="status_waiting_reenumeration">Ожидание повторной нумерации iPhone</string>
     <string name="status_attaching_ncm">Подключение сети NCM/AirPlay</string>
     <string name="status_failed">Ошибка: %1$s</string>
-    <string name="msg_car_hotspot_off">Точка доступа автомобиля «%1$s» выключена. Включите её в настройках автомобиля перед подключением.</string>
+    <string name="msg_car_hotspot_off">Точка доступа автомобиля выключена. Включите её в настройках автомобиля, затем подключитесь.</string>
     <string name="home_public_preview">ОТКРЫТАЯ ПРЕДВАРИТЕЛЬНАЯ ВЕРСИЯ  ·\u0020\u0020</string>
     <string name="choose_iphone_prefix">Выбрать iPhone ·\u0020</string>
     <string name="about_public_preview_prefix">Предварительная версия ·\u0020</string>
-    <string name="msg_car_hotspot_connect">LoopLink подключается через точку доступа автомобиля «%1$s». Включите её в настройках автомобиля и подключитесь.</string>
+    <string name="msg_car_hotspot_connect">LoopLink подключается через точку доступа автомобиля. Включите её в настройках автомобиля, затем подключитесь.</string>
     <string name="edit_saved_hotspot_prefix">Изменить сохранённую точку доступа ·\u0020</string>
     <string name="status_ready_for_prefix">Готов к\u0020</string>
     <string name="audio_stream_unavailable">Тип потока %1$d недоступен здесь (состояние=%2$s)</string>
@@ -351,4 +351,6 @@
     <string name="hotspot_error_long_name">Имя точки доступа не должно превышать 32 байта</string>
     <string name="hotspot_error_invalid_character">Имя или пароль содержит недопустимый символ</string>
     <string name="hotspot_error_password_length">Пароль точки доступа должен содержать от 8 до 63 символов</string>
+    <string name="advanced">Дополнительно</string>
+    <string name="advanced_hint">Качество видео, аудиоканалы и отчёты диагностики. Меняйте, только если вас попросили.</string>
 </resources>
