@@ -1,43 +1,30 @@
 # Credits and license notices
 
-## Receiver
+## Origin
 
-DiPlay is a modified version of [xcertplay by shilapi](https://github.com/shilapi/xcertplay). The upstream receiver is licensed under GNU GPL version 3; the full text is in `LICENSE` and the original README is retained in `docs/UPSTREAM-README.md`.
+LoopLink is a modified version of [DiPlay by shihabal3amri](https://github.com/shihabal3amri/DiPlay), which is itself a modified version of [xcertplay by shilapi](https://github.com/shilapi/xcertplay). Both are licensed under GNU GPL version 3; the full text is in `LICENSE`. The original xcertplay README is retained in `docs/UPSTREAM-README.md`.
 
-Upstream credits [LIVI](https://github.com/f-io/LIVI) and [Showcase](https://github.com/amineross/showcase) for protocol research. Existing source comments and attribution are preserved.
+The AirPlay, iAP2 and accessory-authentication code under `desktop/src/main/kotlin/com/shilapi/xcertplay/` comes from those projects, with existing source comments and attribution preserved. Upstream credits [LIVI](https://github.com/f-io/LIVI) and [Showcase](https://github.com/amineross/showcase) for protocol research.
 
-## Home and settings UI
+LoopLink removes the Android receiver and adds a macOS receiver with a browser display (`desktop/`). Those changes are also GPL-3.0.
 
-`common/src/main/java/com/shilapi/xcertplay/DiPlayActivity.kt` adapts the palette, visual arrangement and interface copy of the [DiAuto project](https://github.com/shihabal3amri/DiAuto). DiAuto's source is licensed under AGPL version 3. The UI file is marked AGPL-3.0-only; its license text is included in `docs/licenses/DiAuto-AGPL-3.0.txt`.
-
-## CarPlay icon
-
-The unmodified icon was obtained from Apple's developer site at:
-
-https://developer.apple.com/assets/elements/icons/carplay/carplay-96x96_2x.png
-
-CarPlay and the CarPlay icon are Apple Inc. marks/assets. This asset is not covered by the project's open-source code license. Its use here does not imply Apple approval or certification.
+The DiPlay Android home/settings UI and download website adapted [DiAuto](https://github.com/shihabal3amri/DiAuto) under AGPL-3.0. That code is not part of LoopLink; it remains available in the upstream DiPlay history.
 
 ## Runtime dependencies
 
-- AndroidX and Jetpack Compose — Android Open Source Project; Apache License 2.0.
 - Kotlin standard library — JetBrains; Apache License 2.0.
 - Bouncy Castle 1.79 — The Legion of the Bouncy Castle Inc.; Bouncy Castle license (MIT-style).
-- JmDNS 3.6.3 — JmDNS contributors; Apache License 2.0.
+- Jackson Databind 2.18 — FasterXML; Apache License 2.0.
+- Java-WebSocket 1.6.0 — Nathan Rajlich and contributors; MIT license.
 - SLF4J — QOS.ch; MIT license.
+- libimobiledevice, libusbmuxd, libplist — libimobiledevice project; GNU LGPL version 2.1 or later. Not bundled: the USB helper links the copies installed on the user's Mac (for example with Homebrew).
 
-Gradle dependency declarations and version catalog accompany the source. License files available in the resolved artifacts are included under `docs/licenses/dependencies/`.
+License files for bundled dependencies are in `docs/licenses/dependencies/`.
+
+## Trademarks
+
+CarPlay, iPhone and AirPlay are trademarks of Apple Inc. LoopLink is not an Apple-certified product, and no Apple affiliation or endorsement is implied.
 
 ## Experimental authentication data
 
-The public preview APK includes an accessory certificate/key pair recovered from public Carlinkit C2Air Allwinner V821 firmware during the owner's local investigation. These data are not newly generated Apple-issued credentials for DiPlay and are not relicensed as project source code. They are bundled in the preview APK to reproduce the offline experiment; continued acceptance and suitability for general distribution are unresolved. The source archive does not contain the private key, and the separate Android APK-signing key is never distributed.
-
-## Download website
-
-The static site layout, CSS and generator adapt DiAuto (AGPL-3.0). The AGPL license text is included with the source.
-
-## BYD HUD maneuver icons
-
-Required Notice: Copyright AndyShaman (https://github.com/AndyShaman/BYDMate)
-
-The maneuver PNGs under `shared/src/main/assets/byd-hud-icons` were imported from BYDMate. Its PolyForm Noncommercial 1.0.0 terms and required notice are included alongside the assets. These files are separate from the project code license; upstream describes them as donor assets and their original provenance is not independently established. The validated DiLink5.1 windshield path uses factory turn codes rather than these images.
+Connecting to a real iPhone requires an accessory identity that is never part of this repository. DiPlay's preview APK bundled a certificate/key pair recovered from public Carlinkit C2Air firmware; such data are not Apple-issued credentials for LoopLink and are not relicensed as project source code. LoopLink reads a locally supplied identity from `DIPLAY_AUTH_ASSETS_DIR` and never commits or serves it; its continued acceptance by iOS is unresolved.

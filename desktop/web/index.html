@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LoopLink</title><link rel="icon" href="/logo.svg" type="image/svg+xml"><link rel="stylesheet" href="/app.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body data-phase="idle">
+  <svg class="sprite" width="0" height="0" aria-hidden="true">
+    <defs>
+      <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
+      <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+      <symbol id="i-prev" viewBox="0 0 24 24"><path d="M6 5v14M19 5l-10 7 10 7z"/></symbol>
+      <symbol id="i-play" viewBox="0 0 24 24"><path d="M5 5l8 7-8 7zM16 5v14M20 5v14"/></symbol>
+      <symbol id="i-next" viewBox="0 0 24 24"><path d="M18 5v14M5 5l10 7-10 7z"/></symbol>
+      <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></symbol>
+      <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></symbol>
+      <symbol id="i-muted" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM17 9l5 6M22 9l-5 6"/></symbol>
+      <symbol id="i-gear" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></symbol>
+      <symbol id="i-full" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+      <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></symbol>
+    </defs>
+  </svg>
+  <header class="bar">
+    <div class="state"><img class="logo" src="/logo.svg" alt="LoopLink" width="22" height="22"><i class="dot"></i><i id="video-light" hidden></i><span id="phase">Starting…</span><span id="resolution" class="muted"></span></div>
+    <nav class="controls" aria-label="CarPlay controls">
+      <div class="group">
+        <button type="button" data-action="home" title="Home (H)" disabled><svg><use href="#i-home"/></svg><span>Home</span></button>
+        <button type="button" data-action="back" title="Back (Esc)" disabled><svg><use href="#i-back"/></svg><span>Back</span></button>
+      </div>
+      <div class="group">
+        <button type="button" data-action="previous" title="Previous track" aria-label="Previous track" disabled><svg><use href="#i-prev"/></svg></button>
+        <button type="button" data-action="play" title="Play / pause" aria-label="Play or pause" disabled><svg><use href="#i-play"/></svg></button>
+        <button type="button" data-action="next" title="Next track" aria-label="Next track" disabled><svg><use href="#i-next"/></svg></button>
+        <button type="button" data-action="siri" id="siri" title="Siri (enable the microphone in Settings)" disabled><svg><use href="#i-mic"/></svg><span>Siri</span></button>
+      </div>
+      <div class="group">
+        <button type="button" data-action="keyframe" title="Fix video: request a fresh frame" aria-label="Fix video" disabled><svg><use href="#i-refresh"/></svg></button>
+        <button type="button" id="mute" title="Mute" aria-label="Mute" aria-pressed="false"><svg class="on"><use href="#i-sound"/></svg><svg class="off"><use href="#i-muted"/></svg></button>
+        <button type="button" id="settings-toggle" title="Settings" aria-label="Settings" aria-expanded="true"><svg><use href="#i-gear"/></svg></button>
+        <button type="button" id="fullscreen" title="Full screen" aria-label="Full screen"><svg><use href="#i-full"/></svg></button>
+      </div>
+    </nav>
+  </header>
+  <div id="notice" class="notice" role="alert" hidden></div>
+  <main id="screen" class="screen" tabindex="0" aria-label="CarPlay touchscreen. Click to control; Escape for back, H for home.">
+    <canvas id="canvas" width="1280" height="720" aria-label="Live CarPlay video" hidden></canvas>
+    <div id="empty" class="empty"><svg><use href="#i-phone"/></svg><p id="message" aria-live="polite">Connect your iPhone to start.</p></div>
+  </main>
+  <aside id="panel" class="panel" aria-label="Connection settings">
+    <form id="setup-form">
+      <fieldset id="settings">
+        <p class="hint">Connect your iPhone with a USB data cable. Unlock it and tap Trust if asked.</p>
+        <div class="row two">
+          <div><label for="size">Resolution</label><select id="size"><option value="1280,720">1280 × 720</option><option value="800,480">800 × 480</option><option value="1920,1080">1920 × 1080</option></select></div>
+          <div><label for="fps">Frame rate</label><select id="fps" name="fps"><option value="30">30 fps</option><option value="60">60 fps</option><option value="24">24 fps</option></select></div>
+        </div>
+        <label class="check"><input id="microphone" type="checkbox"> Microphone for Siri and calls</label>
+      </fieldset>
+      <button id="connect" class="primary" type="submit">Connect</button>
+      <button id="disconnect" class="secondary" type="button" hidden>Disconnect</button>
+    </form>
+    <dl class="stats">
+      <div><dt>Frames</dt><dd id="frames">0</dd></div>
+      <div><dt>Audio</dt><dd id="audio">0</dd></div>
+      <div><dt>Session</dt><dd id="elapsed">—</dd></div>
+    </dl>
+    <p class="identity"><i id="identity-dot"></i><span id="identity">Checking accessory identity…</span></p>
+    <details><summary>Connection log <a href="/api/logs" download>Save</a></summary><pre id="log" role="log" aria-live="off"></pre></details>
+  </aside>
+</body>
+</html>
