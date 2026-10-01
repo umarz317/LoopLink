@@ -48,8 +48,6 @@ class DiPlaySessionService : Service() {
         return START_NOT_STICKY
     }
     override fun onTaskRemoved(rootIntent: Intent?) {
-        // BYD's recents force-stops the package ~10 ms after removing the task: end guidance first.
-        com.shilapi.xcertplay.hud.BydNavigationOutputs.endNow()
         CarPlayBackgroundSession.stop()
         stopSelf()
     }

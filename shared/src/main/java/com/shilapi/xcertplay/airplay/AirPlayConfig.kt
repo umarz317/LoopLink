@@ -38,7 +38,6 @@ data class AirPlayConfig(
     val btMac: String,
     val sourceVersion: String,
     val main: AirPlayDisplayConfig,
-    val cluster: AirPlayDisplayConfig? = null,
     val rightHandDrive: Boolean = false,
     val port: Int = 7000,
     val entertainmentSampleRate: Int = 48000,
