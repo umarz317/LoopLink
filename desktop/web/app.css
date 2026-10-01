@@ -31,7 +31,7 @@ svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke
 .notice[hidden]{display:none}
 
 /* Video */
-.screen{flex:1;min-height:0;display:grid;place-items:center;padding:14px;outline:none;touch-action:none;overflow:hidden}
+.screen{flex:1;min-height:0;display:grid;grid-template:minmax(0,1fr)/minmax(0,1fr);place-items:center;padding:14px;outline:none;touch-action:none;overflow:hidden}
 canvas{max-width:100%;max-height:100%;width:auto;height:auto;border-radius:14px;background:#000;box-shadow:0 20px 60px #000a,0 0 0 1px var(--line);display:block;touch-action:none;cursor:pointer}
 canvas[hidden],.empty[hidden]{display:none}
 .empty{display:flex;flex-direction:column;align-items:center;gap:12px;color:var(--muted);text-align:center;max-width:320px}
