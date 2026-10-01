@@ -10,7 +10,7 @@
     <string name="hotspot_details_saved">تم حفظ البيانات · تأكد من تشغيل نقطة اتصال السيارة قبل الاتصال.</string>
     <string name="report_clip_label">تقرير التشخيص</string>
     <string name="share_diagnostic_report">مشاركة تقرير التشخيص</string>
-    <string name="setup_error_auth">تعذّر تحميل مصادقة CarPlay. ثبّت نسخة DiPlay الكاملة فوق هذا التطبيق. لا حاجة لإلغاء التثبيت أو تغيير إعدادات نقطة الاتصال.</string>
+    <string name="setup_error_auth">تعذّر تحميل مصادقة CarPlay. ثبّت نسخة LoopLink الكاملة فوق هذا التطبيق. لا حاجة لإلغاء التثبيت أو تغيير إعدادات نقطة الاتصال.</string>
     <string name="hotspot_state_stopped">متوقفة</string>
     <string name="hotspot_state_off">مُغلقة</string>
     <string name="hotspot_wireless_prefix">نقطة اتصال لاسلكية:\u0020</string>
@@ -52,7 +52,7 @@
     <string name="home_public_preview">معاينة عامة  ·\u0020\u0020</string>
     <string name="choose_iphone_prefix">اختر iPhone ·\u0020</string>
     <string name="about_public_preview_prefix">معاينة عامة ·\u0020</string>
-    <string name="msg_car_hotspot_connect">يتصل DiPlay عبر نقطة اتصال السيارة «%1$s». شغّلها في إعدادات السيارة ثم اتصل.</string>
+    <string name="msg_car_hotspot_connect">يتصل LoopLink عبر نقطة اتصال السيارة «%1$s». شغّلها في إعدادات السيارة ثم اتصل.</string>
     <string name="edit_saved_hotspot_prefix">تعديل نقطة الاتصال المحفوظة ·\u0020</string>
     <string name="status_ready_for_prefix">جاهز لـ\u0020</string>
     <string name="audio_stream_unavailable">نوع البث %1$d غير متاح هنا (الحالة=%2$s)</string>
@@ -64,21 +64,21 @@
     <string name="language_section_title">اللغة</string>
     <string name="language_app_language">لغة التطبيق</string>
     <string name="language_system_default">إعدادات النظام الافتراضية</string>
-    <string name="language_hint">اختر لغة DiPlay. «إعدادات النظام» يتبع لغة الجهاز.</string>
+    <string name="language_hint">اختر لغة LoopLink. «إعدادات النظام» يتبع لغة الجهاز.</string>
     <string name="language_apply">تطبيق</string>
     <string name="common_cancel">إلغاء</string>
     <string name="a_familiar_drive">رحلة مألوفة.</string>
     <string name="a_previous_wi_fi_direct_connection_is_still_running_reset">ما زال اتصال Wi-Fi Direct السابق قيد التشغيل. أعد ضبطه للاتصال.</string>
     <string name="about">حول</string>
-    <string name="about_diplay">حول DiPlay</string>
+    <string name="about_diplay">حول LoopLink</string>
     <string name="active">نشط</string>
     <string name="advanced_audio_channel_mapping">تعيين متقدم لقنوات الصوت</string>
     <string name="airplay_icon">أيقونة AirPlay</string>
     <string name="allow_carplay_ui_outside_the_safe_area">السماح بواجهة CarPlay خارج المنطقة الآمنة</string>
     <string name="allow_nearby_devices_and_on_older_android_versions_locatio">اسمح بـ «الأجهزة القريبة» وعلى إصدارات Android الأقدم بـ«الموقع» قبل إعادة ضبط واي فاي CarPlay.</string>
-    <string name="allow_nearby_devices_for_diplay_in_the_head_unit_s_app_per">اسمح بـ «الأجهزة القريبة» لـ DiPlay في أذونات تطبيق وحدة القيادة.</string>
-    <string name="allow_nearby_devices_so_diplay_can_connect_to_your_paired">اسمح بـ «الأجهزة القريبة» ليتمكن DiPlay من الاتصال بـ iPhone المقترن.</string>
-    <string name="allow_precise_location_for_diplay_in_the_head_unit_s_app_p">اسمح بـ«الموقع الدقيق» لـ DiPlay في أذونات تطبيق وحدة القيادة.</string>
+    <string name="allow_nearby_devices_for_diplay_in_the_head_unit_s_app_per">اسمح بـ «الأجهزة القريبة» لـ LoopLink في أذونات تطبيق وحدة القيادة.</string>
+    <string name="allow_nearby_devices_so_diplay_can_connect_to_your_paired">اسمح بـ «الأجهزة القريبة» ليتمكن LoopLink من الاتصال بـ iPhone المقترن.</string>
+    <string name="allow_precise_location_for_diplay_in_the_head_unit_s_app_p">اسمح بـ«الموقع الدقيق» لـ LoopLink في أذونات تطبيق وحدة القيادة.</string>
     <string name="allow_the_connection_permission_to_continue">اسمح بإذن الاتصال للمتابعة</string>
     <string name="an_independent_carplay_receiver_for_android_head_units_wir">مستقبل CarPlay مستقل لوحدات قيادة Android. تعمل الاتصالات السلكية واللاسلكية على وحدة القيادة مع مصادقة محلية. يمكن لأي iPhone عادي الاتصال دون جيلبريك أو Mac أو جهاز إضافي أو تسجيل دخول.\n\nتستخدم هذه المعاينة هوية ملحق تجريبية. لا تزال التوافقية مع كل iPhone وكل وحدة قيادة قيد الاختبار. هذا المنتج غير معتمد من Apple.</string>
     <string name="android_9_compatibility">توافق Android 9</string>
@@ -93,7 +93,7 @@
     <string name="automatic_connection">اتصال تلقائي</string>
     <string name="availability_depends_on_your_head_unit_s_startup_settings">تعتمد التوفر على إعدادات بدء وحدة القيادة.</string>
     <string name="back">رجوع</string>
-    <string name="back_to_diplay">العودة إلى DiPlay</string>
+    <string name="back_to_diplay">العودة إلى LoopLink</string>
     <string name="band">النطاق</string>
     <string name="bluetooth_settings">إعدادات بلوتوث</string>
     <string name="cancel">إلغاء</string>
@@ -125,7 +125,7 @@
     <string name="close">إغلاق</string>
     <string name="connect">اتصال</string>
     <string name="connect_phone">اتصال بالهاتف</string>
-    <string name="connect_when_diplay_opens">الاتصال عند فتح DiPlay</string>
+    <string name="connect_when_diplay_opens">الاتصال عند فتح LoopLink</string>
     <string name="connect_with_usb">الاتصال عبر USB</string>
     <string name="connect_your_iphone_with_a_usb_cable">وصّل iPhone بكابل USB</string>
     <string name="connecting_bluetooth">جارٍ الاتصال بالبلوتوث</string>
@@ -140,7 +140,7 @@
     <string name="could_not_reset_wi_fi_direct_close_the_other_projection_ap">تعذّر إعادة ضبط Wi-Fi Direct. أغلق تطبيق العرض الآخر وحاول مجدداً.</string>
     <string name="could_not_save_image">تعذّر حفظ الصورة</string>
     <string name="could_not_save_the_report">تعذّر حفظ التقرير</string>
-    <string name="could_not_start_carplay_return_to_diplay_and_check_app_per">تعذّر بدء CarPlay. عد إلى DiPlay وتحقق من أذونات التطبيق.</string>
+    <string name="could_not_start_carplay_return_to_diplay_and_check_app_per">تعذّر بدء CarPlay. عد إلى LoopLink وتحقق من أذونات التطبيق.</string>
     <string name="custom_1_1_icon">أيقونة مخصصة 1:1</string>
     <string name="debug_logs">سجلات تصحيح</string>
     <string name="default_icon">الأيقونة الافتراضية</string>
@@ -189,7 +189,7 @@
     <string name="i2c_device_path_is_required">مسار جهاز I2C مطلوب</string>
     <string name="identity_appearance">الهوية والمظهر</string>
     <string name="image_is_not_ready">الصورة غير جاهزة</string>
-    <string name="in_carplay_swipe_down_with_three_fingers_to_open_diplay_se">في CarPlay، اسحب لأسفل بثلاثة أصابع لفتح إعدادات DiPlay.</string>
+    <string name="in_carplay_swipe_down_with_three_fingers_to_open_diplay_se">في CarPlay، اسحب لأسفل بثلاثة أصابع لفتح إعدادات LoopLink.</string>
     <string name="keep_bluetooth_and_wi_fi_on_your_iphone_pair_with_the_car">أبقِ البلوتوث وواي فاي مُفعّلين على iPhone. اقرن الهاتف مع بلوتوث السيارة، ثم اختر iPhone هنا. اسمح بـ«الأجهزة القريبة» عند الطلب.</string>
     <string name="keep_your_iphone_nearby_with_bluetooth_and_wi_fi_on_allow">أبقِ iPhone قريبًا مع تشغيل البلوتوث وواي فاي.\nاسمح بـ CarPlay إن طلب iPhone ذلك.</string>
     <string name="later">لاحقاً</string>
@@ -201,7 +201,7 @@
     <string name="longest_height">أقصى ارتفاع</string>
     <string name="looking_for_your_paired_iphone">جارٍ البحث عن iPhone المقترن…</string>
     <string name="made_possible_by_open_source">ممكن بفضل المصدر المفتوح</string>
-    <string name="make_diplay_feel_right_for_your_car">اجعل DiPlay مناسبًا لسيارتك.</string>
+    <string name="make_diplay_feel_right_for_your_car">اجعل LoopLink مناسبًا لسيارتك.</string>
     <string name="manual_hotspot">نقطة اتصال يدوية</string>
     <string name="manufacturer">الشركة المصنّعة</string>
     <string name="mfi_authentication_ready">مصادقة MFi جاهزة</string>
@@ -213,7 +213,7 @@
     <string name="nearby_devices_connects_your_iphone_microphone_enables_sir">«الأجهزة القريبة» تربط iPhone. الميكروفون يمكّن Siri والمكالمات. تتطلب إصدارات Android الأقدم أيضًا الموقع للإعداد اللاسلكي. قد يطلب وضع USB اتصال VPN محلي.</string>
     <string name="nothing_is_sent_automatically_protocol_payloads_and_creden">لا يُرسل شيء تلقائياً. تُستبعد حمولات البروتوكول وبيانات الاعتماد.</string>
     <string name="oem_label">وسم OEM</string>
-    <string name="on_your_iphone_open_settings_bluetooth_and_pair_with_the_c">على iPhone، افتح الإعدادات ← البلوتوث واقترن بالسيارة. ثم عد إلى DiPlay واختر «اتصال بالهاتف».</string>
+    <string name="on_your_iphone_open_settings_bluetooth_and_pair_with_the_c">على iPhone، افتح الإعدادات ← البلوتوث واقترن بالسيارة. ثم عد إلى LoopLink واختر «اتصال بالهاتف».</string>
     <string name="open">فتح</string>
     <string name="open_after_the_car_starts">الفتح بعد تشغيل السيارة</string>
     <string name="open_bluetooth">فتح البلوتوث</string>
@@ -240,7 +240,7 @@
     <string name="preparing_mfi_authentication">جارٍ تجهيز مصادقة MFi</string>
     <string name="ready">جاهز</string>
     <string name="ready_when_you_are">جاهز عندما تكون مستعداً</string>
-    <string name="receiver_based_on_xcertplay_licensed_under_gpl_3_0_diplay">مستقبل مبني على xcertplay، مرخّص بموجب GPL-3.0. تتبع واجهة DiPlay تصميم DiAuto، مرخّص بموجب AGPL-3.0.\n\nيتضمن AndroidX وBouncy Castle وJmDNS وSLF4J. يرافق هذا الإصدار الشفرة المصدر وإشعارات الترخيص.\n\n‏CarPlay وأيقونة CarPlay ملك لشركة Apple Inc. DiPlay مشروع مستقل.</string>
+    <string name="receiver_based_on_xcertplay_licensed_under_gpl_3_0_diplay">LoopLink نسخة متفرعة من DiPlay ومبنية على xcertplay، مرخّصة بموجب GPL-3.0. تتبع واجهة LoopLink تصميم DiAuto، مرخّص بموجب AGPL-3.0.\n\nيتضمن AndroidX وBouncy Castle وJmDNS وSLF4J. يرافق هذا الإصدار الشفرة المصدر وإشعارات الترخيص.\n\n‏CarPlay وأيقونة CarPlay ملك لشركة Apple Inc. LoopLink مشروع مستقل.</string>
     <string name="reconnecting_to_your_iphone">جارٍ إعادة الاتصال بـ iPhone…</string>
     <string name="remote">عن بُعد</string>
     <string name="remote_server_address_contains_u_0000">عنوان الخادم البعيد يحتوي على U+0000</string>
@@ -250,7 +250,7 @@
     <string name="report_android_location_to_the_iphone">إرسال موقع Android إلى iPhone</string>
     <string name="report_location_to_iphone">إرسال الموقع إلى iPhone</string>
     <string name="report_saved_open_it_from_your_file_manager_to_share_it">تم حفظ التقرير. افتحه من مدير الملفات لمشاركته.</string>
-    <string name="reports_save_to_downloads_diplay">تُحفظ التقارير في Downloads/DiPlay.\u0020</string>
+    <string name="reports_save_to_downloads_diplay">تُحفظ التقارير في Downloads/LoopLink.\u0020</string>
     <string name="requesting_iphone_usb_permission">جارٍ طلب إذن USB لـ iPhone</string>
     <string name="requesting_mfi_usb_permission">جارٍ طلب إذن USB لـ MFi</string>
     <string name="reset">إعادة ضبط</string>
@@ -258,13 +258,13 @@
     <string name="reset_carplay_wi_fi">إعادة ضبط واي فاي CarPlay</string>
     <string name="reset_carplay_wi_fi_2">إعادة ضبط واي فاي CarPlay؟</string>
     <string name="resolution">الدقة</string>
-    <string name="return_from_car_settings_to_diplay_then_connect_accept_the">عد من إعدادات السيارة إلى DiPlay ثم اتصل. اقبل مطالبة CarPlay على iPhone. لا يلزم باقة إنترنت للسيارة؛ يعتمد توفر البيانات الجوالة على إعدادات شبكة هاتفك.</string>
+    <string name="return_from_car_settings_to_diplay_then_connect_accept_the">عد من إعدادات السيارة إلى LoopLink ثم اتصل. اقبل مطالبة CarPlay على iPhone. لا يلزم باقة إنترنت للسيارة؛ يعتمد توفر البيانات الجوالة على إعدادات شبكة هاتفك.</string>
     <string name="review_app_permissions">مراجعة أذونات التطبيق</string>
     <string name="right_hand_drive">قيادة يمنى</string>
     <string name="running">قيد التشغيل</string>
     <string name="s_1000_ms_most_stable">1000 مللي ثانية · الأكثر استقراراً</string>
     <string name="s_1_choose_your_connection">1 · اختر اتصالك</string>
-    <string name="s_1_open_car_hotspot_settings_turn_the_hotspot_on_and_sele">1. افتح إعدادات نقطة اتصال السيارة، وشغّل نقطة الاتصال واختر 5 GHz إن توفر.\n2. انسخ الاسم وكلمة المرور أدناه كما هما تماماً.\n3. أبقِ نقطة اتصال السيارة مُشغّلة عند الاتصال. يرسل DiPlay البيانات عبر البلوتوث؛ وينضم iPhone تلقائياً.</string>
+    <string name="s_1_open_car_hotspot_settings_turn_the_hotspot_on_and_sele">1. افتح إعدادات نقطة اتصال السيارة، وشغّل نقطة الاتصال واختر 5 GHz إن توفر.\n2. انسخ الاسم وكلمة المرور أدناه كما هما تماماً.\n3. أبقِ نقطة اتصال السيارة مُشغّلة عند الاتصال. يرسل LoopLink البيانات عبر البلوتوث؛ وينضم iPhone تلقائياً.</string>
     <string name="s_2_pair_your_iphone">2 · اقرن iPhone الخاص بك</string>
     <string name="s_300_ms_default">300 مللي ثانية · الافتراضي</string>
     <string name="s_30_fps_lighter_load">30 إطاراً/ث · حمل أخف</string>

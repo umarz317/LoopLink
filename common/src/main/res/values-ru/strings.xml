@@ -10,7 +10,7 @@
     <string name="hotspot_details_saved">Данные сохранены · Перед подключением убедитесь, что точка доступа автомобиля включена.</string>
     <string name="report_clip_label">Диагностический отчёт</string>
     <string name="share_diagnostic_report">Поделиться диагностическим отчётом</string>
-    <string name="setup_error_auth">Не удалось загрузить аутентификацию CarPlay. Установите полную сборку DiPlay поверх этого приложения. Удалять приложение и менять настройки точки доступа не требуется.</string>
+    <string name="setup_error_auth">Не удалось загрузить аутентификацию CarPlay. Установите полную сборку LoopLink поверх этого приложения. Удалять приложение и менять настройки точки доступа не требуется.</string>
     <string name="hotspot_state_stopped">остановлена</string>
     <string name="hotspot_state_off">выключена</string>
     <string name="hotspot_wireless_prefix">Беспроводная точка доступа:\u0020</string>
@@ -52,7 +52,7 @@
     <string name="home_public_preview">ОТКРЫТАЯ ПРЕДВАРИТЕЛЬНАЯ ВЕРСИЯ  ·\u0020\u0020</string>
     <string name="choose_iphone_prefix">Выбрать iPhone ·\u0020</string>
     <string name="about_public_preview_prefix">Предварительная версия ·\u0020</string>
-    <string name="msg_car_hotspot_connect">DiPlay подключается через точку доступа автомобиля «%1$s». Включите её в настройках автомобиля и подключитесь.</string>
+    <string name="msg_car_hotspot_connect">LoopLink подключается через точку доступа автомобиля «%1$s». Включите её в настройках автомобиля и подключитесь.</string>
     <string name="edit_saved_hotspot_prefix">Изменить сохранённую точку доступа ·\u0020</string>
     <string name="status_ready_for_prefix">Готов к\u0020</string>
     <string name="audio_stream_unavailable">Тип потока %1$d недоступен здесь (состояние=%2$s)</string>
@@ -64,21 +64,21 @@
     <string name="language_section_title">Язык</string>
     <string name="language_app_language">Язык приложения</string>
     <string name="language_system_default">Системный по умолчанию</string>
-    <string name="language_hint">Выберите язык DiPlay. «Системный» следует языку устройства.</string>
+    <string name="language_hint">Выберите язык LoopLink. «Системный» следует языку устройства.</string>
     <string name="language_apply">Применить</string>
     <string name="common_cancel">Отмена</string>
     <string name="a_familiar_drive">Привычная поездка.</string>
     <string name="a_previous_wi_fi_direct_connection_is_still_running_reset">Предыдущее подключение Wi-Fi Direct всё ещё активно. Сбросьте его, чтобы подключиться.</string>
     <string name="about">О программе</string>
-    <string name="about_diplay">О DiPlay</string>
+    <string name="about_diplay">О LoopLink</string>
     <string name="active">Активно</string>
     <string name="advanced_audio_channel_mapping">Расширенное сопоставление звуковых каналов</string>
     <string name="airplay_icon">Значок AirPlay</string>
     <string name="allow_carplay_ui_outside_the_safe_area">Разрешить интерфейс CarPlay за пределами безопасной области</string>
     <string name="allow_nearby_devices_and_on_older_android_versions_locatio">Разрешите «Рядом находящиеся устройства» и, на старых версиях Android, «Местоположение» перед сбросом Wi-Fi CarPlay.</string>
-    <string name="allow_nearby_devices_for_diplay_in_the_head_unit_s_app_per">Разрешите «Рядом находящиеся устройства» для DiPlay в разрешениях приложения головного устройства.</string>
-    <string name="allow_nearby_devices_so_diplay_can_connect_to_your_paired">Разрешите «Рядом находящиеся устройства», чтобы DiPlay мог подключиться к вашему связанному iPhone.</string>
-    <string name="allow_precise_location_for_diplay_in_the_head_unit_s_app_p">Разрешите точное «Местоположение» для DiPlay в разрешениях приложения головного устройства.</string>
+    <string name="allow_nearby_devices_for_diplay_in_the_head_unit_s_app_per">Разрешите «Рядом находящиеся устройства» для LoopLink в разрешениях приложения головного устройства.</string>
+    <string name="allow_nearby_devices_so_diplay_can_connect_to_your_paired">Разрешите «Рядом находящиеся устройства», чтобы LoopLink мог подключиться к вашему связанному iPhone.</string>
+    <string name="allow_precise_location_for_diplay_in_the_head_unit_s_app_p">Разрешите точное «Местоположение» для LoopLink в разрешениях приложения головного устройства.</string>
     <string name="allow_the_connection_permission_to_continue">Разрешите подключение, чтобы продолжить</string>
     <string name="an_independent_carplay_receiver_for_android_head_units_wir">Независимый приёмник CarPlay для головных устройств Android. Проводные и беспроводные подключения работают на головном устройстве с локальной аутентификацией. Обычный iPhone может подключиться без джейлбрейка, Mac, переходника или входа в учётную запись.\n\nВ этой предварительной версии используется экспериментальная аксессуарная идентичность. Совместимость со всеми iPhone и головными устройствами ещё тестируется. Продукт не сертифицирован Apple.</string>
     <string name="android_9_compatibility">Совместимость с Android 9</string>
@@ -93,7 +93,7 @@
     <string name="automatic_connection">Автоматическое подключение</string>
     <string name="availability_depends_on_your_head_unit_s_startup_settings">Доступность зависит от настроек запуска вашего головного устройства.</string>
     <string name="back">Назад</string>
-    <string name="back_to_diplay">Вернуться в DiPlay</string>
+    <string name="back_to_diplay">Вернуться в LoopLink</string>
     <string name="band">Диапазон</string>
     <string name="bluetooth_settings">Настройки Bluetooth</string>
     <string name="cancel">Отмена</string>
@@ -125,7 +125,7 @@
     <string name="close">Закрыть</string>
     <string name="connect">Подключить</string>
     <string name="connect_phone">Подключить телефон</string>
-    <string name="connect_when_diplay_opens">Подключать при открытии DiPlay</string>
+    <string name="connect_when_diplay_opens">Подключать при открытии LoopLink</string>
     <string name="connect_with_usb">Подключить по USB</string>
     <string name="connect_your_iphone_with_a_usb_cable">Подключите iPhone кабелем USB</string>
     <string name="connecting_bluetooth">Подключение Bluetooth</string>
@@ -140,7 +140,7 @@
     <string name="could_not_reset_wi_fi_direct_close_the_other_projection_ap">Не удалось сбросить Wi-Fi Direct. Закройте другое приложение проекции и повторите.</string>
     <string name="could_not_save_image">Не удалось сохранить изображение</string>
     <string name="could_not_save_the_report">Не удалось сохранить отчёт</string>
-    <string name="could_not_start_carplay_return_to_diplay_and_check_app_per">Не удалось запустить CarPlay. Вернитесь в DiPlay и проверьте разрешения приложения.</string>
+    <string name="could_not_start_carplay_return_to_diplay_and_check_app_per">Не удалось запустить CarPlay. Вернитесь в LoopLink и проверьте разрешения приложения.</string>
     <string name="custom_1_1_icon">Пользовательский значок 1:1</string>
     <string name="debug_logs">Отладочные журналы</string>
     <string name="default_icon">Значок по умолчанию</string>
@@ -189,7 +189,7 @@
     <string name="i2c_device_path_is_required">Укажите путь к устройству I2C</string>
     <string name="identity_appearance">Идентичность и оформление</string>
     <string name="image_is_not_ready">Изображение не готово</string>
-    <string name="in_carplay_swipe_down_with_three_fingers_to_open_diplay_se">В CarPlay проведите тремя пальцами вниз, чтобы открыть настройки DiPlay.</string>
+    <string name="in_carplay_swipe_down_with_three_fingers_to_open_diplay_se">В CarPlay проведите тремя пальцами вниз, чтобы открыть настройки LoopLink.</string>
     <string name="keep_bluetooth_and_wi_fi_on_your_iphone_pair_with_the_car">Держите Bluetooth и Wi-Fi включёнными на iPhone. Свяжите телефон с Bluetooth автомобиля, затем выберите iPhone здесь. Разрешите «Рядом находящиеся устройства», когда попросят.</string>
     <string name="keep_your_iphone_nearby_with_bluetooth_and_wi_fi_on_allow">Держите iPhone рядом с включёнными Bluetooth и Wi-Fi.\nРазрешите CarPlay, если iPhone попросит.</string>
     <string name="later">Позже</string>
@@ -201,7 +201,7 @@
     <string name="longest_height">Наибольшая высота</string>
     <string name="looking_for_your_paired_iphone">Поиск связанного iPhone…</string>
     <string name="made_possible_by_open_source">Реализовано благодаря открытому коду</string>
-    <string name="make_diplay_feel_right_for_your_car">Сделайте DiPlay удобным для вашего автомобиля.</string>
+    <string name="make_diplay_feel_right_for_your_car">Сделайте LoopLink удобным для вашего автомобиля.</string>
     <string name="manual_hotspot">Ручная точка доступа</string>
     <string name="manufacturer">Производитель</string>
     <string name="mfi_authentication_ready">Аутентификация MFi готова</string>
@@ -213,7 +213,7 @@
     <string name="nearby_devices_connects_your_iphone_microphone_enables_sir">«Рядом находящиеся устройства» связывают iPhone. Микрофон нужен для Siri и звонков. Старые версии Android также требуют местоположение для беспроводной настройки. Режим USB может запросить локальное VPN-подключение.</string>
     <string name="nothing_is_sent_automatically_protocol_payloads_and_creden">Ничего не отправляется автоматически. Данные протокола и учётные данные исключены.</string>
     <string name="oem_label">Метка OEM</string>
-    <string name="on_your_iphone_open_settings_bluetooth_and_pair_with_the_c">На iPhone откройте Настройки → Bluetooth и свяжитесь с автомобилем. Затем вернитесь в DiPlay и выберите «Подключить телефон».</string>
+    <string name="on_your_iphone_open_settings_bluetooth_and_pair_with_the_c">На iPhone откройте Настройки → Bluetooth и свяжитесь с автомобилем. Затем вернитесь в LoopLink и выберите «Подключить телефон».</string>
     <string name="open">Открыть</string>
     <string name="open_after_the_car_starts">Открывать после запуска автомобиля</string>
     <string name="open_bluetooth">Открыть Bluetooth</string>
@@ -240,7 +240,7 @@
     <string name="preparing_mfi_authentication">Подготовка аутентификации MFi</string>
     <string name="ready">Готово</string>
     <string name="ready_when_you_are">Готово, когда вы будете готовы</string>
-    <string name="receiver_based_on_xcertplay_licensed_under_gpl_3_0_diplay">Приёмник на базе xcertplay, лицензирован по GPL-3.0. Интерфейс DiPlay следует дизайну DiAuto, лицензированному по AGPL-3.0.\n\nВключает AndroidX, Bouncy Castle, JmDNS и SLF4J. Исходный код и уведомления о лицензиях прилагаются к этому выпуску.\n\nCarPlay и значок CarPlay принадлежат Apple Inc. DiPlay — независимый проект.</string>
+    <string name="receiver_based_on_xcertplay_licensed_under_gpl_3_0_diplay">LoopLink — форк DiPlay на базе xcertplay, лицензирован по GPL-3.0. Интерфейс LoopLink следует дизайну DiAuto, лицензированному по AGPL-3.0.\n\nВключает AndroidX, Bouncy Castle, JmDNS и SLF4J. Исходный код и уведомления о лицензиях прилагаются к этому выпуску.\n\nCarPlay и значок CarPlay принадлежат Apple Inc. LoopLink — независимый проект.</string>
     <string name="reconnecting_to_your_iphone">Переподключение к iPhone…</string>
     <string name="remote">Удалённый</string>
     <string name="remote_server_address_contains_u_0000">Адрес удалённого сервера содержит U+0000</string>
@@ -250,7 +250,7 @@
     <string name="report_android_location_to_the_iphone">Передавать местоположение Android на iPhone</string>
     <string name="report_location_to_iphone">Передавать местоположение на iPhone</string>
     <string name="report_saved_open_it_from_your_file_manager_to_share_it">Отчёт сохранён. Откройте его в файловом менеджере, чтобы поделиться.</string>
-    <string name="reports_save_to_downloads_diplay">Отчёты сохраняются в Downloads/DiPlay.\u0020</string>
+    <string name="reports_save_to_downloads_diplay">Отчёты сохраняются в Downloads/LoopLink.\u0020</string>
     <string name="requesting_iphone_usb_permission">Запрос разрешения USB для iPhone</string>
     <string name="requesting_mfi_usb_permission">Запрос разрешения USB для MFi</string>
     <string name="reset">Сбросить</string>
@@ -258,13 +258,13 @@
     <string name="reset_carplay_wi_fi">Сбросить Wi-Fi CarPlay</string>
     <string name="reset_carplay_wi_fi_2">Сбросить Wi-Fi CarPlay?</string>
     <string name="resolution">Разрешение</string>
-    <string name="return_from_car_settings_to_diplay_then_connect_accept_the">Вернитесь из настроек автомобиля в DiPlay и подключитесь. Примите запрос CarPlay на iPhone. Автомобильный тариф не требуется; доступность мобильных данных зависит от настроек сети телефона.</string>
+    <string name="return_from_car_settings_to_diplay_then_connect_accept_the">Вернитесь из настроек автомобиля в LoopLink и подключитесь. Примите запрос CarPlay на iPhone. Автомобильный тариф не требуется; доступность мобильных данных зависит от настроек сети телефона.</string>
     <string name="review_app_permissions">Проверить разрешения приложения</string>
     <string name="right_hand_drive">Праворукий руль</string>
     <string name="running">Работает</string>
     <string name="s_1000_ms_most_stable">1000 мс · самая стабильная</string>
     <string name="s_1_choose_your_connection">1 · Выберите способ подключения</string>
-    <string name="s_1_open_car_hotspot_settings_turn_the_hotspot_on_and_sele">1. Откройте настройки точки доступа автомобиля, включите её и выберите 5 ГГц, если доступно.\n2. Точно скопируйте ниже её имя и пароль.\n3. Оставляйте точку доступа включённой при подключении. DiPlay передаёт данные по Bluetooth; iPhone подключится автоматически.</string>
+    <string name="s_1_open_car_hotspot_settings_turn_the_hotspot_on_and_sele">1. Откройте настройки точки доступа автомобиля, включите её и выберите 5 ГГц, если доступно.\n2. Точно скопируйте ниже её имя и пароль.\n3. Оставляйте точку доступа включённой при подключении. LoopLink передаёт данные по Bluetooth; iPhone подключится автоматически.</string>
     <string name="s_2_pair_your_iphone">2 · Свяжите iPhone</string>
     <string name="s_300_ms_default">300 мс · по умолчанию</string>
     <string name="s_30_fps_lighter_load">30 кадров/с · меньшая нагрузка</string>

@@ -10,7 +10,7 @@
     <string name="hotspot_details_saved">详情已保存 · 连接前请确认车载热点已开启。</string>
     <string name="report_clip_label">诊断报告</string>
     <string name="share_diagnostic_report">分享诊断报告</string>
-    <string name="setup_error_auth">无法加载 CarPlay 认证。请在本应用之上覆盖安装完整的 DiPlay 构建。无需卸载或更改热点设置。</string>
+    <string name="setup_error_auth">无法加载 CarPlay 认证。请在本应用之上覆盖安装完整的 LoopLink 构建。无需卸载或更改热点设置。</string>
     <string name="hotspot_state_stopped">已停止</string>
     <string name="hotspot_state_off">已关闭</string>
     <string name="hotspot_wireless_prefix">无线热点：</string>
@@ -52,7 +52,7 @@
     <string name="home_public_preview">公开预览  ·\u0020\u0020</string>
     <string name="choose_iphone_prefix">选择 iPhone ·\u0020</string>
     <string name="about_public_preview_prefix">公开预览 ·\u0020</string>
-    <string name="msg_car_hotspot_connect">DiPlay 通过车机热点“%1$s”连接。请在车机设置中开启热点后连接。</string>
+    <string name="msg_car_hotspot_connect">LoopLink 通过车机热点“%1$s”连接。请在车机设置中开启热点后连接。</string>
     <string name="edit_saved_hotspot_prefix">编辑已保存的热点 ·\u0020</string>
     <string name="status_ready_for_prefix">已准备连接：</string>
     <string name="audio_stream_unavailable">流类型 %1$d 在此不可用（状态=%2$s）</string>
@@ -64,19 +64,19 @@
     <string name="a_familiar_drive">熟悉的驾乘体验。</string>
     <string name="a_previous_wi_fi_direct_connection_is_still_running_reset">之前的 Wi-Fi Direct 连接仍在运行。请重置后再连接。</string>
     <string name="about">关于</string>
-    <string name="about_diplay">关于 DiPlay</string>
+    <string name="about_diplay">关于 LoopLink</string>
     <string name="active">已启用</string>
     <string name="advanced_audio_channel_mapping">高级音频通道映射</string>
     <string name="airplay_icon">AirPlay 图标</string>
     <string name="allow_carplay_ui_outside_the_safe_area">允许 CarPlay 界面超出安全区域</string>
     <string name="allow_nearby_devices_and_on_older_android_versions_locatio">重置 CarPlay Wi-Fi 前，请授予“附近的设备”权限；较旧的 Android 版本还需要位置权限。</string>
-    <string name="allow_nearby_devices_for_diplay_in_the_head_unit_s_app_per">请在车机应用权限中允许 DiPlay 访问附近的设备。</string>
-    <string name="allow_nearby_devices_so_diplay_can_connect_to_your_paired">请允许 DiPlay 访问附近的设备，以连接已配对的 iPhone。</string>
-    <string name="allow_precise_location_for_diplay_in_the_head_unit_s_app_p">请在车机应用权限中允许 DiPlay 使用精确位置信息。</string>
+    <string name="allow_nearby_devices_for_diplay_in_the_head_unit_s_app_per">请在车机应用权限中允许 LoopLink 访问附近的设备。</string>
+    <string name="allow_nearby_devices_so_diplay_can_connect_to_your_paired">请允许 LoopLink 访问附近的设备，以连接已配对的 iPhone。</string>
+    <string name="allow_precise_location_for_diplay_in_the_head_unit_s_app_p">请在车机应用权限中允许 LoopLink 使用精确位置信息。</string>
     <string name="allow_the_connection_permission_to_continue">请授予连接权限以继续</string>
     <string name="an_independent_carplay_receiver_for_android_head_units_wir">面向 Android 车机的独立 CarPlay 接收器。有线和无线连接均在车机上运行，并使用本地认证。普通 iPhone 无需越狱、Mac、转接器或登录即可连接。\n\n此预览版使用实验性配件身份，仍在测试与不同 iPhone 和车机的兼容性。本产品未经 Apple 认证。</string>
     <string name="android_9_compatibility">Android 9 兼容性</string>
-    <string name="app_name">DiPlay</string>
+    <string name="app_name">LoopLink</string>
     <string name="app_permissions">应用权限</string>
     <string name="app_settings">应用设置</string>
     <string name="apply_and_reconnect">应用并重新连接</string>
@@ -88,7 +88,7 @@
     <string name="automatic_connection">自动连接</string>
     <string name="availability_depends_on_your_head_unit_s_startup_settings">是否可用取决于车机的启动设置。</string>
     <string name="back">返回</string>
-    <string name="back_to_diplay">返回 DiPlay</string>
+    <string name="back_to_diplay">返回 LoopLink</string>
     <string name="band">频段</string>
     <string name="bluetooth_settings">蓝牙设置</string>
     <string name="cancel">取消</string>
@@ -122,7 +122,7 @@
     <string name="common_cancel">取消</string>
     <string name="connect">连接</string>
     <string name="connect_phone">连接手机</string>
-    <string name="connect_when_diplay_opens">打开 DiPlay 时连接</string>
+    <string name="connect_when_diplay_opens">打开 LoopLink 时连接</string>
     <string name="connect_with_usb">通过 USB 连接</string>
     <string name="connect_your_iphone_with_a_usb_cable">请使用 USB 数据线连接 iPhone</string>
     <string name="connecting_bluetooth">正在连接蓝牙</string>
@@ -137,14 +137,14 @@
     <string name="could_not_reset_wi_fi_direct_close_the_other_projection_ap">无法重置 Wi-Fi Direct。请关闭其他投屏应用后重试。</string>
     <string name="could_not_save_image">无法保存图片</string>
     <string name="could_not_save_the_report">无法保存报告</string>
-    <string name="could_not_start_carplay_return_to_diplay_and_check_app_per">无法启动 CarPlay。请返回 DiPlay 检查应用权限。</string>
+    <string name="could_not_start_carplay_return_to_diplay_and_check_app_per">无法启动 CarPlay。请返回 LoopLink 检查应用权限。</string>
     <string name="custom_1_1_icon">自定义 1:1 图标</string>
     <string name="debug_logs">调试日志</string>
     <string name="default_icon">默认图标</string>
     <string name="default_placeholder_icon">默认占位图标</string>
     <string name="diagnostic_report_saved">诊断报告已保存</string>
     <string name="diagnostics">诊断</string>
-    <string name="diplay">DiPlay</string>
+    <string name="diplay">LoopLink</string>
     <string name="discard_changes_and_exit_settings">放弃更改并退出设置</string>
     <string name="disconnect">断开连接</string>
     <string name="discovering_iphone">正在查找 iPhone</string>
@@ -188,12 +188,12 @@
     <string name="i2c_device_path_is_required">必须填写 I2C 设备路径</string>
     <string name="identity_appearance">身份与外观</string>
     <string name="image_is_not_ready">图片尚未准备好</string>
-    <string name="in_carplay_swipe_down_with_three_fingers_to_open_diplay_se">在 CarPlay 界面用三指向下滑动，可打开 DiPlay 设置。</string>
+    <string name="in_carplay_swipe_down_with_three_fingers_to_open_diplay_se">在 CarPlay 界面用三指向下滑动，可打开 LoopLink 设置。</string>
     <string name="keep_bluetooth_and_wi_fi_on_your_iphone_pair_with_the_car">保持 iPhone 的蓝牙和 Wi-Fi 开启。先与车机蓝牙配对，然后在此选择你的 iPhone。出现提示时允许“附近的设备”。</string>
     <string name="keep_your_iphone_nearby_with_bluetooth_and_wi_fi_on_allow">请将 iPhone 放在附近并开启蓝牙和 Wi-Fi。\niPhone 出现提示时允许使用 CarPlay。</string>
     <string name="language_app_language">应用语言</string>
     <string name="language_apply">应用</string>
-    <string name="language_hint">选择 DiPlay 的语言。“跟随系统”将使用设备语言。</string>
+    <string name="language_hint">选择 LoopLink 的语言。“跟随系统”将使用设备语言。</string>
     <string name="language_section_title">语言</string>
     <string name="language_system_default">跟随系统</string>
     <string name="later">稍后</string>
@@ -206,7 +206,7 @@
     <string name="longest_height">较长边</string>
     <string name="looking_for_your_paired_iphone">正在查找已配对的 iPhone…</string>
     <string name="made_possible_by_open_source">开源项目鸣谢</string>
-    <string name="make_diplay_feel_right_for_your_car">按需调整 DiPlay 设置。</string>
+    <string name="make_diplay_feel_right_for_your_car">按需调整 LoopLink 设置。</string>
     <string name="manual_hotspot">手动热点</string>
     <string name="manufacturer">制造商</string>
     <string name="mfi_authentication_ready">MFi 认证已就绪</string>
@@ -218,7 +218,7 @@
     <string name="nearby_devices_connects_your_iphone_microphone_enables_sir">“附近的设备”权限用于连接 iPhone；麦克风权限用于 Siri 和通话。较旧的 Android 版本还需要位置权限来设置无线连接。USB 模式可能会请求建立本地 VPN 连接。</string>
     <string name="nothing_is_sent_automatically_protocol_payloads_and_creden">报告不会自动发送，不包含协议数据和凭据。</string>
     <string name="oem_label">OEM 标签</string>
-    <string name="on_your_iphone_open_settings_bluetooth_and_pair_with_the_c">在 iPhone 上打开“设置 → 蓝牙”并与车机配对。然后返回 DiPlay，点击“连接手机”。</string>
+    <string name="on_your_iphone_open_settings_bluetooth_and_pair_with_the_c">在 iPhone 上打开“设置 → 蓝牙”并与车机配对。然后返回 LoopLink，点击“连接手机”。</string>
     <string name="open">开放</string>
     <string name="open_after_the_car_starts">车机启动后打开</string>
     <string name="open_bluetooth">打开蓝牙</string>
@@ -245,7 +245,7 @@
     <string name="preparing_mfi_authentication">正在准备 MFi 认证</string>
     <string name="ready">就绪</string>
     <string name="ready_when_you_are">一切就绪</string>
-    <string name="receiver_based_on_xcertplay_licensed_under_gpl_3_0_diplay">接收器基于采用 GPL-3.0 许可的 xcertplay。DiPlay 界面沿用采用 AGPL-3.0 许可的 DiAuto 设计。\n\n项目包含 AndroidX、Bouncy Castle、JmDNS 和 SLF4J。本版本附有源代码和许可声明。\n\nCarPlay 和 CarPlay 图标归 Apple Inc. 所有。DiPlay 是独立项目。</string>
+    <string name="receiver_based_on_xcertplay_licensed_under_gpl_3_0_diplay">LoopLink 是 DiPlay 的分支，基于采用 GPL-3.0 许可的 xcertplay。LoopLink 界面沿用采用 AGPL-3.0 许可的 DiAuto 设计。\n\n项目包含 AndroidX、Bouncy Castle、JmDNS 和 SLF4J。本版本附有源代码和许可声明。\n\nCarPlay 和 CarPlay 图标归 Apple Inc. 所有。LoopLink 是独立项目。</string>
     <string name="reconnecting_to_your_iphone">正在重新连接 iPhone…</string>
     <string name="remote">远程</string>
     <string name="remote_server_address_contains_u_0000">远程服务器地址包含 U+0000</string>
@@ -255,7 +255,7 @@
     <string name="report_android_location_to_the_iphone">向 iPhone 报告 Android 位置</string>
     <string name="report_location_to_iphone">向 iPhone 报告位置</string>
     <string name="report_saved_open_it_from_your_file_manager_to_share_it">报告已保存。在文件管理器中打开即可分享。</string>
-    <string name="reports_save_to_downloads_diplay">报告将保存到 Downloads/DiPlay。</string>
+    <string name="reports_save_to_downloads_diplay">报告将保存到 Downloads/LoopLink。</string>
     <string name="requesting_iphone_usb_permission">正在请求 iPhone USB 权限</string>
     <string name="requesting_mfi_usb_permission">正在请求 MFi USB 权限</string>
     <string name="reset">重置</string>
@@ -263,7 +263,7 @@
     <string name="reset_carplay_wi_fi">重置 CarPlay Wi-Fi</string>
     <string name="reset_carplay_wi_fi_2">重置 CarPlay Wi-Fi？</string>
     <string name="resolution">分辨率</string>
-    <string name="return_from_car_settings_to_diplay_then_connect_accept_the">从车机设置返回 DiPlay，然后连接。在 iPhone 上接受 CarPlay 提示。无需车机流量套餐；移动数据可用性取决于手机的网络设置。</string>
+    <string name="return_from_car_settings_to_diplay_then_connect_accept_the">从车机设置返回 LoopLink，然后连接。在 iPhone 上接受 CarPlay 提示。无需车机流量套餐；移动数据可用性取决于手机的网络设置。</string>
     <string name="review_app_permissions">查看应用权限</string>
     <string name="right_hand_drive">右舵</string>
     <string name="running">运行中</string>
@@ -271,7 +271,7 @@
     <string name="s_1000_ms_most_stable">1000 毫秒 · 更稳定</string>
     <string name="s_1_0x">1.0x</string>
     <string name="s_1_choose_your_connection">1 · 选择连接方式</string>
-    <string name="s_1_open_car_hotspot_settings_turn_the_hotspot_on_and_sele">1. 打开车机热点设置，开启热点，如有 5 GHz 请选择。\n2. 在下方准确复制热点名称和密码。\n3. 连接时保持车机热点开启。DiPlay 通过蓝牙发送热点信息，iPhone 会自动加入。</string>
+    <string name="s_1_open_car_hotspot_settings_turn_the_hotspot_on_and_sele">1. 打开车机热点设置，开启热点，如有 5 GHz 请选择。\n2. 在下方准确复制热点名称和密码。\n3. 连接时保持车机热点开启。LoopLink 通过蓝牙发送热点信息，iPhone 会自动加入。</string>
     <string name="s_2_4_ghz">2.4 GHz</string>
     <string name="s_2_pair_your_iphone">2 · 配对你的 iPhone</string>
     <string name="s_300_ms_default">300 毫秒 · 默认</string>

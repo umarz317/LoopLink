@@ -1,3 +1,12 @@
+# Unreleased — LoopLink
+
+- Fork DiPlay 0.2.8 as LoopLink with app ID `io.loopbreak.looplink`, so it installs alongside DiPlay. The head unit, notification, reports (Downloads/LoopLink) and the iPhone show the name LoopLink, in all five languages.
+- New LoopLink logo for the launcher, the app and the car's icon in CarPlay (replacing the bundled CarPlay and BYD icons), and a dark and orange palette.
+- Remove BYD-specific features: windshield HUD and instrument-cluster navigation, the dashboard map and ADB map pause, ADB battery, wheel-speed and parked-video reporting, the BYD steering-wheel keycodes and the BYD HUD icons.
+- Unit tests, lint and the debug build pass, and the UI was checked in a head-unit emulator. Not yet tested on a head unit or with an iPhone.
+
+The entries below are the history inherited from DiPlay.
+
 # DiPlay 0.2.8 — 2026-09-30
 
 - Keep iPhone location reporting active across the wireless Bluetooth-to-Wi-Fi CarPlay handoff; limit location updates to one per second on wireless and USB.

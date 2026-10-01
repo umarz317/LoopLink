@@ -14,7 +14,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.shihab.diplay"
+        applicationId = "io.loopbreak.looplink"
         minSdk = 28
         targetSdk = 37
         versionCode = 27
@@ -39,8 +39,7 @@ android {
 
     buildTypes {
         debug {
-            applicationIdSuffix = ".hudtest"
-            versionNameSuffix = "-hud-test"
+            versionNameSuffix = "-debug"
         }
         release {
             optimization {

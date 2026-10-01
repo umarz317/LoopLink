@@ -139,7 +139,7 @@ class DiPlayActivity : ComponentActivity() {
         val content = column().apply { setPadding(dp(32), dp(24), dp(32), dp(32)) }
         scroll.addView(content)
         val header = row().apply { gravity = Gravity.CENTER_VERTICAL }
-        header.addView(ImageView(this).apply { setImageResource(R.drawable.ic_carplay); contentDescription = getString(R.string.carplay) }, LinearLayout.LayoutParams(dp(36), dp(36)))
+        header.addView(ImageView(this).apply { setImageResource(R.drawable.ic_looplink); contentDescription = getString(R.string.carplay) }, LinearLayout.LayoutParams(dp(36), dp(36)))
         header.addView(label(getString(R.string.diplay), 26, TEXT, true).apply { setPadding(dp(12), 0, 0, 0) }, LinearLayout.LayoutParams(0, dp(56), 1f))
         header.addView(button(if (page == "home") getString(R.string.car_home) else getString(R.string.back), false) {
             if (page == "home") startActivity(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME))
@@ -191,7 +191,7 @@ class DiPlayActivity : ComponentActivity() {
         card.addView(disconnectButton, matchButton(10, 56))
         val right = column().apply { gravity = Gravity.CENTER_HORIZONTAL }
         val logo = ImageView(this).apply {
-            setImageResource(R.drawable.ic_carplay)
+            setImageResource(R.drawable.ic_looplink)
             contentDescription = getString(R.string.carplay_icon)
             scaleType = ImageView.ScaleType.FIT_CENTER
         }
@@ -729,7 +729,7 @@ class DiPlayActivity : ComponentActivity() {
         }
         connectButton?.isEnabled = setupError == null
     }
-    private fun reportFileName() = "DiPlay-${SimpleDateFormat("yyyyMMdd-HHmmss-SSS", Locale.US).format(Date())}.txt"
+    private fun reportFileName() = "LoopLink-${SimpleDateFormat("yyyyMMdd-HHmmss-SSS", Locale.US).format(Date())}.txt"
 
     private fun chooseReportDestination() {
         // Some head units omit or disable DocumentsUI. Launch itself can throw, before
@@ -750,7 +750,7 @@ class DiPlayActivity : ComponentActivity() {
         Thread({
             val result = runCatching {
                 val report = buildString {
-                    appendLine("DiPlay ${version()} · private beta diagnostic report")
+                    appendLine("LoopLink ${version()} · diagnostic report")
                     appendLine("Android ${Build.VERSION.RELEASE} / API ${Build.VERSION.SDK_INT}")
                     appendLine("Head unit: ${Build.MANUFACTURER} ${Build.MODEL}")
                     appendLine("Connection: ${if (AirPlayPersistence.loadWirelessEnabled(appContext)) "wireless" else "USB"}")
@@ -785,7 +785,7 @@ class DiPlayActivity : ComponentActivity() {
                 if (result.isSuccess) {
                     val savedUri = result.getOrThrow()
                     AlertDialog.Builder(this).setTitle(getString(R.string.diagnostic_report_saved))
-                        .setMessage(if (uri == null) "Downloads/DiPlay/$fileName" else getString(R.string.your_report_was_saved_to_the_selected_location))
+                        .setMessage(if (uri == null) "Downloads/LoopLink/$fileName" else getString(R.string.your_report_was_saved_to_the_selected_location))
                         .setPositiveButton(getString(R.string.done), null)
                         .setNeutralButton(getString(R.string.share)) { _, _ ->
                             runCatching {
@@ -854,7 +854,7 @@ class DiPlayActivity : ComponentActivity() {
         target.isSelected = selected
         target.setTextColor(if (selected) BG else TEXT)
         target.background = android.graphics.drawable.RippleDrawable(
-            ColorStateList.valueOf(0x336F9FD9),
+            ColorStateList.valueOf(0x33F47A3A),
             rounded(if (selected) ACCENT else SURFACE, if (selected) ACCENT else BORDER),
             null
         )
@@ -957,7 +957,7 @@ class DiPlayActivity : ComponentActivity() {
     private fun button(title: String, primary: Boolean, click: () -> Unit) = Button(this).apply {
         text = title; isAllCaps = false; textSize = 18f; setTextColor(if (primary) BG else TEXT)
         typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
-        background = android.graphics.drawable.RippleDrawable(ColorStateList.valueOf(0x336F9FD9), rounded(if (primary) ACCENT else SURFACE, if (primary) ACCENT else BORDER), null)
+        background = android.graphics.drawable.RippleDrawable(ColorStateList.valueOf(0x33F47A3A), rounded(if (primary) ACCENT else SURFACE, if (primary) ACCENT else BORDER), null)
         setPadding(dp(16), 0, dp(16), 0); minHeight = dp(56); stateListAnimator = null
         setOnClickListener { click() }
     }
@@ -966,12 +966,12 @@ class DiPlayActivity : ComponentActivity() {
     private fun space(height: Int) = View(this).apply { layoutParams = LinearLayout.LayoutParams(1, dp(height)) }
     private fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
     companion object {
-        private val BG = Color.rgb(12, 17, 27)
-        private val SURFACE = Color.rgb(21, 30, 44)
-        private val BORDER = Color.rgb(42, 56, 75)
-        private val ACCENT = Color.rgb(166, 200, 255)
-        private val TEXT = Color.rgb(241, 245, 252)
-        private val MUTED = Color.rgb(168, 182, 202)
-        private val WARNING = Color.rgb(255, 196, 128)
+        private val BG = Color.rgb(7, 9, 13)
+        private val SURFACE = Color.rgb(17, 21, 29)
+        private val BORDER = Color.rgb(35, 43, 56)
+        private val ACCENT = Color.rgb(244, 122, 58)
+        private val TEXT = Color.rgb(232, 236, 243)
+        private val MUTED = Color.rgb(139, 148, 167)
+        private val WARNING = Color.rgb(251, 191, 36)
     }
 }
