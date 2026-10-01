@@ -244,7 +244,10 @@ class AndroidMediaSink(
     }
 
     override fun onMicrophoneStarted(id: AudioStreamId, config: MicrophoneConfig) {
-        val uplink = microphoneUplinks.computeIfAbsent(id) { MicrophoneUplink(config) }
+        val context = appContext ?: return
+        val uplink = microphoneUplinks.computeIfAbsent(id) {
+            MicrophoneUplink(context, config, MicrophoneGain.DEFAULT_PERCENT)
+        }
         if (!uplink.start()) microphoneUplinks.remove(id, uplink)
     }
 
@@ -528,7 +531,10 @@ private class VideoDecoder(
 
     private fun feed(nalus: ByteArray) {
         val annexB = MediaCodecSupport.toAnnexB(nalus)
-        val config = lastConfig ?: return
+        val config = lastConfig ?: run {
+            requestKeyFrameIfDue()
+            return
+        }
         if (outputSurface == null) return
         if (annexB.isEmpty()) { recover("invalid video access unit"); return }
         if (!referenceChain.accepts(annexB, config.codec)) {

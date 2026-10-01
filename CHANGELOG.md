@@ -1,3 +1,9 @@
+# Unreleased
+
+- Port xcertplay core changes through `17c9243`: wired PCM/wireless Opus negotiation, microphone capture and encoder fallback, video packet validation and missing-configuration recovery, wireless listener and Bluetooth candidate fixes, and long-lived iAP2 control sessions.
+- Feed incremental now-playing metadata and file-transfer artwork into LoopLink's existing media session.
+- Keep LoopLink's local certificate/key provisioning, device-specific Wi-Fi credentials, audio buffering/routing, and location handoff behavior. See `docs/XCERTPLAY_CORE_PORT.md` for the comparison and validation scope.
+
 # LoopLink 0.3.0 — 2026-10-01
 
 - Use the play-button logo consistently in the launcher and documentation.

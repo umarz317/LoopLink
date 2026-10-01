@@ -16,10 +16,16 @@ import com.shilapi.xcertplay.iap2.wire.Iap2Parameter
 import com.shilapi.xcertplay.iap2.wire.Iap2ParameterList
 import com.shilapi.xcertplay.iap2.wire.Iap2ProtocolException
 import org.junit.Assert.assertArrayEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
+import com.shilapi.xcertplay.iap2.message.Iap2NowPlayingAccumulator
+import com.shilapi.xcertplay.iap2.message.Iap2PlaybackStatus
+import com.shilapi.xcertplay.iap2.message.Iap2HidMessages
+import com.shilapi.xcertplay.iap2.message.Iap2MediaRemoteCommand
+import com.shilapi.xcertplay.iap2.session.Iap2FileTransferHandler
+import com.shilapi.xcertplay.transport.Iap2LinkEngine
 import org.junit.Test
 
 class Iap2ProtocolTest {
@@ -185,5 +191,123 @@ class Iap2ProtocolTest {
         val formatted = Iap2FrameFormatter.format(Iap2TraceDirection.TX, "wired", frame)
 
         assertTrue(formatted.contains("\\r\\n"))
+    }    @Test
+    fun nowPlayingUpdatesMergeIncrementallyAndFreezeElapsedTimeWhenPaused() {
+        var now = 1_000L
+        val accumulator = Iap2NowPlayingAccumulator { now }
+        val initial = accumulator.update(
+            Iap2Messages.buildRaw(0x5001) {
+                group(0) {
+                    string(1, "Track")
+                    u32(4, 180_000)
+                    string(12, "Artist")
+                }
+                group(1) {
+                    u8(0, 1)
+                    u32(1, 12_000)
+                    u32(2, 2)
+                    u32(3, 10)
+                    string(7, "Music")
+                }
+            },
+        )
+        now = 4_000L
+        val paused = accumulator.update(
+            Iap2Messages.buildRaw(0x5001) {
+                group(1) { u8(0, 2) }
+            },
+        )
+
+        assertEquals("Track", initial.title)
+        assertEquals(Iap2PlaybackStatus.PLAYING, initial.status)
+        assertEquals(2L, paused.queueIndex)
+        assertEquals("Music", paused.appName)
+        assertEquals(Iap2PlaybackStatus.PAUSED, paused.status)
+        assertEquals(15_000L, paused.elapsedMillis)
+        assertEquals(4_000L, paused.positionUpdateRealtimeMillis)
+    }
+
+    @Test
+    fun aNewSessionDoesNotInheritThePreviousPhonesTrack() {
+        val accumulator = Iap2NowPlayingAccumulator()
+        accumulator.update(Iap2Messages.buildRaw(0x5001) { group(0) { string(1, "Previous track") } })
+        accumulator.clear()
+        val next = accumulator.update(Iap2Messages.buildRaw(0x5001) { group(1) { u8(0, 1) } })
+        assertNull(next.title)
+        assertNull(next.artworkFileTransferId)
+        assertEquals(Iap2PlaybackStatus.PLAYING, next.status)
+    }
+
+    @Test
+    fun nowPlayingUpdateParsesArtworkFileTransferIdentifier() {
+        val accumulator = Iap2NowPlayingAccumulator { 0L }
+        val withArtwork = accumulator.update(
+            Iap2Messages.buildRaw(0x5001) {
+                group(0) {
+                    string(1, "Track")
+                    u8(26, 7)
+                }
+            },
+        )
+
+        assertEquals(7, withArtwork.artworkFileTransferId)
+    }
+
+    @Test
+    fun linkAndNowPlayingSubscriptionDeclareArtworkFileTransferCapability() {
+        val sessions = Iap2LinkEngine().peerSynchronization().sessions
+        val nowPlaying = Iap2ControlMessages.subscriptions().first()
+
+        assertTrue(
+            sessions.any {
+                it.id == Iap2LinkEngine.FILE_TRANSFER_SESSION_ID && it.kind == 1 && it.version == 2
+            },
+        )
+        assertTrue(Iap2BodyReader.of(nowPlaying).group(0).has(26))
+    }
+
+    @Test
+    fun fileTransferAssemblesArtworkAndReusesCachedIdentifier() {
+        val handler = Iap2FileTransferHandler()
+        val setup = byteArrayOf(
+            7, 0x04,
+            0, 0, 0, 0, 0, 0, 0, 5,
+            0, 2,
+        )
+
+        assertArrayEquals(byteArrayOf(7, 0x01), handler.handle(setup).response)
+        assertNull(handler.handle(byteArrayOf(7, 0x80.toByte(), 1, 2)).response)
+        assertNull(handler.handle(byteArrayOf(7, 0x00, 3)).response)
+        val completed = handler.handle(byteArrayOf(7, 0x40, 4, 5))
+        assertArrayEquals(byteArrayOf(7, 0x05), completed.response)
+        assertArrayEquals(byteArrayOf(1, 2, 3, 4, 5), completed.artwork?.bytes)
+
+        val cached = handler.handle(setup) { it == 7 }
+        assertArrayEquals(byteArrayOf(7, 0x05), cached.response)
+        assertNull(cached.artwork)
+    }
+
+    @Test
+    fun hidMediaRemoteUsesAdvertisedDescriptorAndPressReleaseReports() {
+        val start = Iap2HidMessages.startMediaPlaybackRemote()
+        val next = Iap2HidMessages.mediaReport(Iap2MediaRemoteCommand.NEXT)
+        val release = Iap2HidMessages.releaseMediaButtons()
+
+        assertEquals(0x6800, start.messageId)
+        assertEquals(Iap2HidMessages.MEDIA_PLAYBACK_COMPONENT_ID, Iap2BodyReader.of(start).u16(0))
+        assertArrayEquals(
+            byteArrayOf(
+                0x05, 0x0c, 0x09, 0x01, 0xa1.toByte(), 0x01, 0x15, 0x00,
+                0x25, 0x01, 0x75, 0x01, 0x95.toByte(), 0x04, 0x09, 0xb0.toByte(),
+                0x09, 0xb1.toByte(), 0x09, 0xb5.toByte(), 0x09, 0xb6.toByte(),
+                0x81.toByte(), 0x02, 0x75, 0x04, 0x95.toByte(), 0x01, 0x81.toByte(),
+                0x03, 0xc0.toByte(),
+            ),
+            Iap2BodyReader.of(start).bytes(4),
+        )
+        assertEquals(0x6802, next.messageId)
+        assertArrayEquals(byteArrayOf(4), Iap2BodyReader.of(next).bytes(1))
+        assertArrayEquals(byteArrayOf(0), Iap2BodyReader.of(release).bytes(1))
+        assertEquals(0x6803, Iap2HidMessages.stopMediaPlaybackRemote().messageId)
     }
 }

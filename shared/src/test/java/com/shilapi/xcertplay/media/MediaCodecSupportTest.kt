@@ -63,6 +63,27 @@ class MediaCodecSupportTest {
         assertEquals(0, MediaCodecSupport.hevcCodecSpecificData(truncated).size)
     }
 
+    @Test
+    fun incompleteHevcParameterSetsAreRejected() {
+        assertEquals(0, MediaCodecSupport.hevcCodecSpecificData(hevcRecord(byteArrayOf(0x40, 1))).size)
+    }
+
+    @Test
+    fun hevcCsdOrdersParameterSetsAndPreservesSei() {
+        val vps = byteArrayOf(0x40, 1)
+        val sps = byteArrayOf(0x42, 1, 2)
+        val pps = byteArrayOf(0x44, 1)
+        val sei = byteArrayOf(0x4e, 1, 2)
+        val start = byteArrayOf(0, 0, 0, 1)
+        assertArrayEquals(start + vps + start + sps + start + pps + start + sei,
+            MediaCodecSupport.hevcCodecSpecificData(hevcRecord(pps, sei, sps, vps)))
+    }
+
+    @Test
+    fun hugeNalLengthDoesNotOverflowBoundsCheck() {
+        assertEquals(0, MediaCodecSupport.toAnnexB(byteArrayOf(0x7f, -1, -1, -1, 0x26, 1)).size)
+    }
+
     private fun hevcRecord(vararg parameterSets: ByteArray): ByteArray {
         var size = 23
         parameterSets.forEach { size += 5 + it.size }
@@ -72,7 +93,8 @@ class MediaCodecSupportTest {
         record[22] = parameterSets.size.toByte()
         var cursor = 23
         parameterSets.forEachIndexed { index, parameterSet ->
-            record[cursor++] = (32 + index).toByte()
+            record[cursor++] = if (parameterSet.isEmpty()) (32 + index).toByte()
+            else ((parameterSet[0].toInt() ushr 1) and 0x3f).toByte()
             record[cursor++] = 0
             record[cursor++] = 1
             record[cursor++] = (parameterSet.size ushr 8).toByte()

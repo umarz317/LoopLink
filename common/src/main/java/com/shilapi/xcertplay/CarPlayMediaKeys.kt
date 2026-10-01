@@ -2,9 +2,12 @@ package com.shilapi.xcertplay
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
+import android.graphics.Bitmap
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
+import android.media.MediaMetadata
 import android.media.session.MediaSession
 import android.media.session.PlaybackState
 import android.os.Handler
@@ -12,6 +15,8 @@ import android.os.Looper
 import android.util.Log
 import android.view.KeyEvent
 import com.shilapi.xcertplay.airplay.CarPlayMediaButton
+import com.shilapi.xcertplay.iap2.message.Iap2NowPlayingState
+import com.shilapi.xcertplay.iap2.message.Iap2PlaybackStatus
 import com.shilapi.xcertplay.orchestration.CarPlayController
 
 /**
@@ -33,13 +38,44 @@ internal object CarPlayMediaKeys {
     private var focusRequest: AudioFocusRequest? = null
     private var focusHeld = false
     private var appContext: Context? = null
+    private var nowPlaying: Iap2NowPlayingState? = null
+    private var artworkId: Int? = null
+    private var artworkBitmap: Bitmap? = null
 
     @Synchronized
     fun attach(context: Context, next: CarPlayController) {
-        if (controller !== next) releaseLocked()
+        if (controller !== next) {
+            controller?.let {
+                it.playbackListener = null
+                it.nowPlayingListener = null
+                it.artworkListener = null
+            }
+            releaseLocked()
+        }
         appContext = context.applicationContext
         controller = next
         next.playbackListener = ::onIphonePlaying
+        next.nowPlayingListener = { state ->
+            mainHandler.post {
+                synchronized(this) {
+                    if (controller === next) {
+                        nowPlaying = state
+                        publishNowPlayingLocked()
+                    }
+                }
+            }
+        }
+        next.artworkListener = { id ->
+            mainHandler.post {
+                synchronized(this) {
+                    if (controller === next && nowPlaying?.artworkFileTransferId == id) {
+                        artworkId = null
+                        artworkBitmap = null
+                        publishNowPlayingLocked()
+                    }
+                }
+            }
+        }
     }
 
     /** Ends key handling for [expected]; a newer controller's state is left alone. */
@@ -47,6 +83,8 @@ internal object CarPlayMediaKeys {
     fun detach(expected: CarPlayController?) {
         if (expected == null || controller !== expected) return
         expected.playbackListener = null
+        expected.nowPlayingListener = null
+        expected.artworkListener = null
         controller = null
         releaseLocked()
     }
@@ -80,6 +118,50 @@ internal object CarPlayMediaKeys {
             PlaybackState.Builder()
                 .setActions(ACTIONS)
                 .setState(if (active) PlaybackState.STATE_PLAYING else PlaybackState.STATE_PAUSED, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 1f)
+                .build(),
+        )
+        if (nowPlaying != null) publishNowPlayingLocked()
+    }
+
+    private fun publishNowPlayingLocked() {
+        val mediaSession = session ?: return
+        val state = nowPlaying ?: return
+        val metadata = MediaMetadata.Builder()
+        state.title?.let { metadata.putString(MediaMetadata.METADATA_KEY_TITLE, it) }
+        state.artist?.let { metadata.putString(MediaMetadata.METADATA_KEY_ARTIST, it) }
+        state.album?.let { metadata.putString(MediaMetadata.METADATA_KEY_ALBUM, it) }
+        state.durationMillis?.let { metadata.putLong(MediaMetadata.METADATA_KEY_DURATION, it) }
+        state.artworkFileTransferId?.let { id ->
+            if (artworkId != id) controller?.cachedArtwork(id)?.let { bytes ->
+                val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+                if (options.outWidth > 0 && options.outHeight > 0) {
+                    options.inSampleSize = 1
+                    while (maxOf(options.outWidth, options.outHeight) / options.inSampleSize > 512) {
+                        options.inSampleSize *= 2
+                    }
+                    options.inJustDecodeBounds = false
+                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)?.let { bitmap ->
+                        artworkId = id
+                        artworkBitmap = bitmap
+                    }
+                }
+            }
+            if (artworkId == id) artworkBitmap?.let {
+                metadata.putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, it)
+            }
+        }
+        mediaSession.setMetadata(metadata.build())
+        val playing = state.status == Iap2PlaybackStatus.PLAYING
+        val playback = when (state.status) {
+            Iap2PlaybackStatus.PLAYING -> PlaybackState.STATE_PLAYING
+            Iap2PlaybackStatus.PAUSED -> PlaybackState.STATE_PAUSED
+            else -> PlaybackState.STATE_STOPPED
+        }
+        mediaSession.setPlaybackState(
+            PlaybackState.Builder().setActions(ACTIONS)
+                .setState(playback, state.elapsedMillis, if (playing) 1f else 0f,
+                    state.positionUpdateRealtimeMillis)
                 .build(),
         )
     }
@@ -118,6 +200,9 @@ internal object CarPlayMediaKeys {
         focusRequest?.let { request -> appContext?.getSystemService(AudioManager::class.java)?.abandonAudioFocusRequest(request) }
         focusRequest = null
         focusHeld = false
+        nowPlaying = null
+        artworkId = null
+        artworkBitmap = null
     }
 
     private fun send(index: Int, source: String) {

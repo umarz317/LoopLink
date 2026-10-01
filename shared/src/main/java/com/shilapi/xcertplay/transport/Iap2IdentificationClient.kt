@@ -2,12 +2,15 @@ package com.shilapi.xcertplay.transport
 
 import com.shilapi.xcertplay.iap2.body.Iap2BodyReader
 import com.shilapi.xcertplay.iap2.catalog.Iap2Endpoints
+import com.shilapi.xcertplay.iap2.message.Iap2HidMessages
 import com.shilapi.xcertplay.iap2.message.Iap2Messages
 import com.shilapi.xcertplay.iap2.session.Iap2Session
 import com.shilapi.xcertplay.iap2.wire.Iap2Frame
 import com.shilapi.xcertplay.transport.Iap2VehicleStatus.electricVehicleComponents
 import java.io.IOException
 import kotlin.math.min
+
+private fun ByteArray.toHex(): String = joinToString(separator = " ") { "%02x".format(it.toInt() and 0xff) }
 
 /** The wireless transport identity advertised on the Bluetooth identification session. */
 class Iap2WirelessIdentification(
@@ -57,6 +60,9 @@ data class Iap2IdentificationConfig(
     val chargingConnectors: EvChargingConnectors = EvChargingConnectors.CCS2_TYPE2,
     /** Also offer wheel speed ($PASCD) in the location component; needs [locationInformationEnabled]. */
     val vehicleSpeedEnabled: Boolean = false,
+    /** USB-IF identity used by StartHID; defaults match this app's existing AirPlay HID identity. */
+    val hidVendorIdentifier: Int = 2,
+    val hidProductIdentifier: Int = 1,
 ) {
     constructor(
         name: String,
@@ -102,13 +108,16 @@ data class Iap2IdentificationConfig(
         require(carPlayUsbInterfaceNumber in 0..0xff) {
             "carPlayUsbInterfaceNumber must be in 0..255"
         }
+        require(hidVendorIdentifier in 0..0xffff) { "hidVendorIdentifier must fit in u16" }
+        require(hidProductIdentifier in 0..0xffff) { "hidProductIdentifier must fit in u16" }
     }
 }
 
 /** Identification failures distinguished from the underlying iAP2 transport failure. */
 sealed class Iap2IdentificationException(message: String) : IOException(message) {
-    class Rejected(parameterIds: Set<Int>) : Iap2IdentificationException(
+    class Rejected(parameterIds: Set<Int>, rawBody: ByteArray) : Iap2IdentificationException(
         "iAP2 identification rejected parameters ${parameterIds.sorted().joinToString(prefix = "[", postfix = "]") { "0x${it.toString(16).padStart(4, '0')}" }}; " +
+            "raw 0x1d03 body=${rawBody.toHex()}; " +
             "this minimal identification profile has no optional components to remove",
     ) {
         val parameterIds: Set<Int> = parameterIds.toSet()
@@ -145,7 +154,7 @@ class Iap2IdentificationClient(private val session: Iap2Session) {
                 IDENTIFICATION_ACCEPTED -> return
                 IDENTIFICATION_REJECTED -> {
                     val rejected = Iap2BodyReader.of(frame).list().mapTo(LinkedHashSet()) { it.id }
-                    throw Iap2IdentificationException.Rejected(rejected)
+                    throw Iap2IdentificationException.Rejected(rejected, frame.payload)
                 }
                 else -> throw Iap2IdentificationException.UnexpectedMessage(frame.messageId)
             }
@@ -232,14 +241,11 @@ class Iap2IdentificationClient(private val session: Iap2Session) {
                         string(4, "blue")
                         void(5)
                     }
-                    group(24) {
-                        u16(0, 1)
-                        string(1, wireless.ssid)
-                        void(2)
-                        u16(3, 1)
-                        void(4)
-                        void(5)
-                    }
+                }
+                group(18) {
+                    u16(0, Iap2HidMessages.MEDIA_PLAYBACK_COMPONENT_ID)
+                    string(1, "Media Playback Remote")
+                    u8(2, 1)
                 }
                 if (config.vehicleStatusEnabled) electricVehicleComponents(config.manufacturer, config.chargingConnectors)
                 if (config.locationInformationEnabled) {
@@ -258,6 +264,16 @@ class Iap2IdentificationClient(private val session: Iap2Session) {
                     u16(2, 64) // MaxCurrentRoadNameLength
                     u16(4, 64) // MaxAfterManeuverRoadNameLength
                     u16(6, 8)
+                }
+                if (wireless != null) {
+                    group(24) {
+                        u16(0, 1)
+                        string(1, wireless.ssid)
+                        void(2)
+                        u16(3, 1)
+                        void(4)
+                        void(5)
+                    }
                 }
             }
         }
@@ -284,6 +300,9 @@ class Iap2IdentificationClient(private val session: Iap2Session) {
             0x4156, // StopCallStateUpdates
             0xae03, // PowerSourceUpdate
             0x4301, // CarPlayStartSession
+            0x6800, // StartHID
+            0x6802, // AccessoryHIDReport
+            0x6803, // StopHID
         )
         private val MESSAGES_RECEIVED_FROM_PHONE = intArrayOf(
             0xaa00, // RequestAuthenticationCertificate
@@ -299,10 +318,9 @@ class Iap2IdentificationClient(private val session: Iap2Session) {
             0x4158, // CommunicationsUpdate
             0x4155, // CallStateUpdate
             0x4300, // CarPlayAvailability
+            0x6801, // DeviceHIDReport (phone→accessory reply required once StartHID is declared)
         )
         private const val POWER_SOURCE_UPDATE = 0xae03
-        private const val CARPLAY_AVAILABILITY = 0x4300
-        private const val CARPLAY_START_SESSION = 0x4301
         private const val ACCESSORY_WIFI_CONFIGURATION_INFORMATION = 0x5703
         private const val LOCATION_INFORMATION = 0xfffb
         private const val START_LOCATION_INFORMATION = 0xfffa

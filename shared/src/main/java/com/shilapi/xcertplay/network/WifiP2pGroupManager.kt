@@ -559,9 +559,11 @@ class WifiP2pGroupManager(
             WifiP2pGroup.SECURITY_TYPE_WPA3_COMPATIBILITY ->
                 Iap2WirelessSecurity.WPA3_TRANSITION
             WifiP2pGroup.SECURITY_TYPE_WPA3_SAE -> Iap2WirelessSecurity.WPA3_ONLY
-            else -> throw IOException(
-                "Unsupported Wi-Fi P2P security type: ${group.securityType}",
-            )
+            else -> {
+                // Some vendor frameworks leave securityType unset after creating a WPA2 group.
+                diagnostic("Unreported Wi-Fi P2P security type ${group.securityType}; assuming WPA2-PSK")
+                Iap2WirelessSecurity.WPA_WPA2
+            }
         }
     }
 

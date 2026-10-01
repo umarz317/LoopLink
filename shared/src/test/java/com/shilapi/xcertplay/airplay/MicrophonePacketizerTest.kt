@@ -1,5 +1,7 @@
 package com.shilapi.xcertplay.airplay
 
+import java.net.InetAddress
+
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -48,5 +50,23 @@ class MicrophonePacketizerTest {
                 byteArrayOf(0x34, 0x12, 0x78, 0x56),
             ),
         )
+    }    @Test
+    fun opusCaptureFramesFollowNegotiatedRate() {
+        fun config(rate: Int) = MicrophoneConfig(
+            audioType = "default",
+            sampleRate = rate,
+            channels = 1,
+            payloadType = 100,
+            frameMillis = 20,
+            host = InetAddress.getLoopbackAddress(),
+            port = 12345,
+            key = ByteArray(32),
+            codec = AudioCodecKind.OPUS,
+        )
+
+        assertEquals(320, config(16_000).samplesPerPacket)
+        assertEquals(640, config(16_000).frameBytes)
+        assertEquals(480, config(24_000).samplesPerPacket)
+        assertEquals(960, config(48_000).samplesPerPacket)
     }
 }

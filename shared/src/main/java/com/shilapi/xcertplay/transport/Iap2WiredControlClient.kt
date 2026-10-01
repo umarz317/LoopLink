@@ -1,5 +1,6 @@
 package com.shilapi.xcertplay.transport
 
+import com.shilapi.xcertplay.iap2.message.Iap2HidMessages
 import com.shilapi.xcertplay.iap2.message.Iap2CarPlayMessages
 import com.shilapi.xcertplay.iap2.message.Iap2ControlMessages
 import com.shilapi.xcertplay.iap2.session.Iap2Session
@@ -27,6 +28,8 @@ class Iap2WiredControlClient(
         timeoutMillis: Long = DEFAULT_TIMEOUT_MILLIS,
         locationProvider: Iap2LocationProvider? = null,
         vehicleStatusProvider: VehicleStatusProvider? = null,
+        onReady: () -> Unit = {},
+        onStopped: () -> Unit = {},
         onIncoming: (Iap2Frame) -> Unit = {},
         onProgress: (String) -> Unit = {},
     ): Iap2WiredControlResult {
@@ -48,12 +51,21 @@ class Iap2WiredControlClient(
         mfi.run(session, requireRemaining(deadlineNanos), onProgress)
         stage = Iap2WiredControlStage.AUTHENTICATED
         onProgress("iap2 authentication accepted")
-        deadlineNanos.authenticated()
 
         send(powerSourceUpdate(availableCurrentMilliAmps), deadlineNanos)
         for (subscription in subscriptions()) send(subscription, deadlineNanos)
         stage = Iap2WiredControlStage.SUBSCRIBED
         onProgress("iap2 power/subscriptions sent")
+        send(
+            Iap2HidMessages.startMediaPlaybackRemote(
+                identification.hidVendorIdentifier,
+                identification.hidProductIdentifier,
+            ),
+            deadlineNanos,
+        )
+        onProgress("iap2 tx=0x6800 start media playback remote")
+        deadlineNanos.authenticated()
+        onReady()
 
         var forwardedFrames = 0
         var carPlayStartSessions = 0
@@ -118,7 +130,15 @@ class Iap2WiredControlClient(
             }
         } finally {
             locationProvider?.stop()
+            stopMediaRemote(onStopped)
         }
+    }
+
+    private fun stopMediaRemote(onStopped: () -> Unit) {
+        if (!session.isClosed) {
+            runCatching { session.send(Iap2HidMessages.stopMediaPlaybackRemote(), 1_000L) }
+        }
+        onStopped()
     }
 
     private fun send(frame: Iap2Frame, deadlineNanos: Iap2ControlDeadline) {
@@ -131,8 +151,6 @@ class Iap2WiredControlClient(
         private const val CARPLAY_START_SESSION = 0x4301
         private const val DEFAULT_TIMEOUT_MILLIS = 60_000L
         private const val MAX_TIMEOUT_MILLIS = 24 * 60 * 60 * 1_000L
-        private const val MAX_RECV_TIMEOUT_MILLIS = 5 * 60 * 1_000L
-        private const val NANOS_PER_MILLISECOND = 1_000_000L
 
         /** Exact LIVI wired PowerSourceUpdate encoding: current and the charge-if-powered flag. */
         fun powerSourceUpdate(availableCurrentMilliAmps: Int): Iap2Frame =

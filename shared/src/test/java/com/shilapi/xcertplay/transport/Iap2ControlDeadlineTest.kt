@@ -21,11 +21,17 @@ class Iap2ControlDeadlineTest {
         now = 60_000_000_000L
         assertEquals(0L, deadline.remainingMillis())
     }
-    @Test fun explicitFiniteWindowsStillExpireAfterAuthentication() {
+    @Test fun aFiniteBringUpWindowDoesNotExpireAnAuthenticatedDrive() {
         var now = -1_000_000_000L
         val deadline = Iap2ControlDeadline(100) { now }
         deadline.authenticated()
         now += 100_000_000L
+        assertEquals(30_000L, deadline.remainingMillis())
+    }
+    @Test fun aFiniteBringUpWindowStillExpiresBeforeAuthentication() {
+        var now = 0L
+        val deadline = Iap2ControlDeadline(100) { now }
+        now = 100_000_000L
         assertEquals(0L, deadline.remainingMillis())
     }
 }

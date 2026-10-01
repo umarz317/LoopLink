@@ -16,6 +16,7 @@ Upstream credits [LIVI](https://github.com/f-io/LIVI) and [Showcase](https://git
 - Kotlin standard library — JetBrains; Apache License 2.0.
 - Bouncy Castle 1.79 — The Legion of the Bouncy Castle Inc.; Bouncy Castle license (MIT-style).
 - JmDNS 3.6.3 — JmDNS contributors; Apache License 2.0.
+- Concentus 1.0.0 (`com.plasmoverse:concentus`) — Logan Stromberg and contributors; BSD 3-Clause. Provides the software Opus microphone fallback.
 - SLF4J — QOS.ch; MIT license.
 
 Gradle dependency declarations and version catalog accompany the source. License files available in the resolved artifacts are included under `docs/licenses/dependencies/`.

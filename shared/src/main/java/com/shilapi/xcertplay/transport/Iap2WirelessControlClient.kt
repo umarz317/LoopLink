@@ -1,12 +1,12 @@
 package com.shilapi.xcertplay.transport
 
+import com.shilapi.xcertplay.iap2.message.Iap2HidMessages
 import com.shilapi.xcertplay.iap2.message.Iap2CarPlayMessages
 import com.shilapi.xcertplay.iap2.message.Iap2WirelessMessages
 import com.shilapi.xcertplay.iap2.message.Iap2WirelessSessionParameters
 import com.shilapi.xcertplay.iap2.session.Iap2Session
 import com.shilapi.xcertplay.iap2.wire.Iap2Frame
 import com.shilapi.xcertplay.mfi.Iap2MfiAuthenticationClient
-import kotlin.math.min
 
 /**
  * The wireless LIVI control sequence after a CSM channel is ready:
@@ -29,6 +29,7 @@ class Iap2WirelessControlClient(
         locationRequest: Iap2LocationRequest? = null,
         continueLocationRequest: Boolean = false,
         onReady: () -> Unit = {},
+        onStopped: () -> Unit = {},
         onIncoming: (Iap2Frame) -> Unit = {},
         onProgress: (String) -> Unit = {},
     ): Iap2WirelessControlResult {
@@ -39,11 +40,7 @@ class Iap2WirelessControlClient(
             "timeoutMillis must be in 1..$MAX_TIMEOUT_MILLIS or NO_TIMEOUT_MILLIS"
         }
 
-        val deadlineNanos = if (timeoutMillis == NO_TIMEOUT_MILLIS) {
-            Long.MAX_VALUE
-        } else {
-            deadlineAfter(timeoutMillis)
-        }
+        val deadlineNanos = Iap2ControlDeadline(timeoutMillis)
         val identified = identification.withVehicleStatusFrom(vehicleStatusProvider)
         if (identified.vehicleStatusEnabled != identification.vehicleStatusEnabled) {
             onProgress("iap2 no battery reading: not declaring an electric vehicle")
@@ -61,6 +58,15 @@ class Iap2WirelessControlClient(
         }
         stage = Iap2WirelessControlStage.SUBSCRIBED
         onProgress("iap2 subscriptions sent")
+        send(
+            Iap2HidMessages.startMediaPlaybackRemote(
+                identification.hidVendorIdentifier,
+                identification.hidProductIdentifier,
+            ),
+            deadlineNanos,
+        )
+        onProgress("iap2 tx=0x6800 start media playback remote")
+        deadlineNanos.authenticated()
         onReady()
 
         var forwardedFrames = 0
@@ -72,7 +78,8 @@ class Iap2WirelessControlClient(
         var wirelessCarPlayAvailableSeen = false
         val location = Iap2LocationReporter(locationProvider, onProgress, locationRequest, continueLocationRequest)
         val vehicleStatus = Iap2VehicleStatusReporter(vehicleStatusProvider, onProgress)
-        while (true) {
+        try {
+            while (true) {
                 val remaining = remainingMillis(deadlineNanos)
                 if (remaining == 0L) {
                     return Iap2WirelessControlResult(
@@ -217,10 +224,20 @@ class Iap2WirelessControlClient(
                         forwardedFrames++
                     }
                 }
+            }
+        } finally {
+            stopMediaRemote(onStopped)
         }
     }
 
-    private fun send(frame: Iap2Frame, deadlineNanos: Long) {
+    private fun stopMediaRemote(onStopped: () -> Unit) {
+        if (!session.isClosed) {
+            runCatching { session.send(Iap2HidMessages.stopMediaPlaybackRemote(), 1_000L) }
+        }
+        onStopped()
+    }
+
+    private fun send(frame: Iap2Frame, deadlineNanos: Iap2ControlDeadline) {
         session.send(frame, requireRemaining(deadlineNanos))
     }
 
@@ -234,10 +251,8 @@ class Iap2WirelessControlClient(
         const val NO_TIMEOUT_MILLIS = Long.MAX_VALUE
         private const val DEFAULT_TIMEOUT_MILLIS = 60_000L
         private const val MAX_TIMEOUT_MILLIS = 24 * 60 * 60 * 1_000L
-        private const val MAX_RECV_TIMEOUT_MILLIS = 5 * 60 * 1_000L
         private const val MAX_PRE_TRANSPORT_WIFI_CONFIGURATION_SENDS = 5
         private const val MAX_POST_TRANSPORT_WIFI_CONFIGURATION_SENDS = 2
-        private const val NANOS_PER_MILLISECOND = 1_000_000L
 
         /** Reference-compatible 0x5703 body. BSSID is omitted when the platform does not expose it. */
         fun accessoryWiFiConfiguration(endpoint: Iap2WirelessCarPlayEndpoint): Iap2Frame =
@@ -269,24 +284,13 @@ class Iap2WirelessControlClient(
             next: Iap2WirelessControlStage,
         ): Iap2WirelessControlStage = if (current.ordinal >= next.ordinal) current else next
 
-        private fun deadlineAfter(timeoutMillis: Long): Long {
-            val now = System.nanoTime()
-            val delta = timeoutMillis * NANOS_PER_MILLISECOND
-            return if (Long.MAX_VALUE - now < delta) Long.MAX_VALUE else now + delta
-        }
-
-        private fun requireRemaining(deadlineNanos: Long): Long = remainingMillis(deadlineNanos).also {
+        private fun requireRemaining(deadlineNanos: Iap2ControlDeadline): Long = remainingMillis(deadlineNanos).also {
             if (it == 0L) throw IphoneUsbException.TimedOut("Timed out during wireless iAP2 control bring-up")
         }
 
-        private fun remainingMillis(deadlineNanos: Long): Long {
-            val remaining = deadlineNanos - System.nanoTime()
-            if (remaining <= 0) return 0L
-            return min(
-                MAX_RECV_TIMEOUT_MILLIS,
-                (remaining + NANOS_PER_MILLISECOND - 1) / NANOS_PER_MILLISECOND,
-            )
-        }
+        private fun remainingMillis(deadlineNanos: Iap2ControlDeadline): Long =
+            deadlineNanos.remainingMillis()
+
     }
 }
 
