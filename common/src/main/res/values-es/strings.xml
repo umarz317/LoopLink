@@ -353,4 +353,6 @@
     <string name="hotspot_error_password_length">La contraseña del punto de acceso debe tener entre 8 y 63 caracteres</string>
     <string name="advanced">Avanzado</string>
     <string name="advanced_hint">Calidad de vídeo, canales de audio e informes de diagnóstico. Cámbialos solo si te lo piden.</string>
+    <string name="car_icon_in_carplay">Icono de inicio en CarPlay</string>
+    <string name="car_icon_in_carplay_description">Muestra el icono que vuelve a la pantalla del coche. Cambiarlo vuelve a conectar CarPlay.</string>
 </resources>

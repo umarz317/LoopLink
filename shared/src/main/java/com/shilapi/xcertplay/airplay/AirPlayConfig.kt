@@ -48,6 +48,8 @@ data class AirPlayConfig(
     val model: String = "xcertplay",
     val oemLabel: String = "xcertplay",
     val icons: List<AirPlayIcon> = emptyList(),
+    /** Shows CarPlay's back-to-car icon; false asks the iPhone to hide it. */
+    val oemIconVisible: Boolean = true,
     /** iOS 27 video in car (see [VideoInCar]); video plays only while [VideoInCar.allowed]. */
     val videoInCar: Boolean = false,
 )

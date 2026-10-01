@@ -53,6 +53,7 @@ object AirPlayPersistence {
     private const val KEY_MANUFACTURER = "manufacturer"
     private const val KEY_MODEL = "model"
     private const val KEY_OEM_LABEL = "oem_label"
+    private const val KEY_OEM_ICON_VISIBLE = "oem_icon_visible"
     private const val KEY_FPS = "display_fps"
     private const val KEY_MEDIA_BUFFER_MS = "media_buffer_ms"
     private const val KEY_WIDTH_PHYSICAL_MM = "display_width_physical_mm"
@@ -74,9 +75,9 @@ object AirPlayPersistence {
 
     const val DEFAULT_MANUFACTURER = "LoopLink"
     const val DEFAULT_MODEL = "LoopLink"
-    const val DEFAULT_OEM_LABEL = "Car"
-    // Earlier builds saved this default; it reads as a brand on non-BYD cars.
-    private const val LEGACY_OEM_LABEL = "BYD"
+    const val DEFAULT_OEM_LABEL = "Home"
+    // Earlier builds saved these defaults; "BYD" reads as a brand on other cars.
+    private val LEGACY_OEM_LABELS = setOf("BYD", "Car")
     const val DEFAULT_MFI_I2C_PATH = "/dev/i2c-1"
 
     fun loadDisplayScaleTenths(context: Context): Int {
@@ -370,7 +371,7 @@ object AirPlayPersistence {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
             .getString(KEY_OEM_LABEL, DEFAULT_OEM_LABEL)
             // iOS hides the car icon without a label.
-            .orEmpty().takeUnless { it.isBlank() || it == LEGACY_OEM_LABEL } ?: DEFAULT_OEM_LABEL
+            .orEmpty().takeUnless { it.isBlank() || it in LEGACY_OEM_LABELS } ?: DEFAULT_OEM_LABEL
 
     fun saveOemLabel(context: Context, oemLabel: String) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
@@ -443,6 +444,16 @@ object AirPlayPersistence {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
             .putInt(KEY_MAX_DETECTED_WIDTH, widthPixels.coerceAtLeast(0))
             .putInt(KEY_MAX_DETECTED_HEIGHT, heightPixels.coerceAtLeast(0))
+            .apply()
+    }
+
+    fun loadOemIconVisible(context: Context): Boolean =
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .getBoolean(KEY_OEM_ICON_VISIBLE, true)
+
+    fun saveOemIconVisible(context: Context, visible: Boolean) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+            .putBoolean(KEY_OEM_ICON_VISIBLE, visible)
             .apply()
     }
 

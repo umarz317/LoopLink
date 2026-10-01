@@ -2654,6 +2654,7 @@ class CarPlayHostActivity : ComponentActivity() {
             model = normalizedModel(),
             oemLabel = oemLabel,
             icons = listOf(loadAirPlayIcon()),
+            oemIconVisible = AirPlayPersistence.loadOemIconVisible(this),
         )
     }
 

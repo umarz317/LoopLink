@@ -55,7 +55,9 @@ object AirPlayInfoPlist {
             AirPlayHid.mediaHidDevice(MAIN_UUID),
             AirPlayHid.telephonyHidDevice(MAIN_UUID),
         )
-        if (config.icons.isNotEmpty()) {
+        if (!config.oemIconVisible) {
+            info["oemIconVisible"] = false
+        } else if (config.icons.isNotEmpty()) {
             info["oemIconVisible"] = true
             info["oemIconLabel"] = config.oemLabel
             info["oemIcons"] = config.icons.map { icon ->

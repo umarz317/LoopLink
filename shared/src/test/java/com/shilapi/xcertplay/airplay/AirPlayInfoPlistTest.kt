@@ -78,6 +78,25 @@ class AirPlayInfoPlistTest {
     }
 
     @Test
+    fun hiddenOemIconIsNotAdvertised() {
+        val info = AirPlayInfoPlist.build(
+            AirPlayConfig(
+                deviceName = "test",
+                deviceId = "02:00:00:00:00:02",
+                btMac = "02:00:00:00:00:02",
+                sourceVersion = "366.0",
+                main = AirPlayDisplayConfig(widthPixels = 1280, heightPixels = 720),
+                icons = listOf(AirPlayIcon(1, 1, byteArrayOf(0x01))),
+                oemIconVisible = false,
+            ),
+        )
+
+        assertEquals(false, info["oemIconVisible"])
+        assertFalse(info.containsKey("oemIcons"))
+        assertFalse(info.containsKey("oemIconLabel"))
+    }
+
+    @Test
     fun squareOemIconIsAdvertisedWithItsOriginalBytes() {
         val iconBytes = byteArrayOf(0x01, 0x02, 0x03, 0x04)
         val info = AirPlayInfoPlist.build(
