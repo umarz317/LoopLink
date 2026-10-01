@@ -17,7 +17,7 @@ import com.shilapi.xcertplay.orchestration.CarPlayController
 /**
  * Steering-wheel and other hardware media buttons for CarPlay.
  *
- * Android delivers media keys to a media session; BYD picks the session of the audio-focus
+ * Android delivers media keys to a media session; the head unit picks the session of the audio-focus
  * owner. Once CarPlay plays music, DiPlay holds audio focus and an active session until the
  * CarPlay session ends, so play also works after a pause. Keys go to the iPhone as CarPlay media
  * HID presses ([CarPlayMediaButton]).
@@ -121,12 +121,6 @@ internal object CarPlayMediaKeys {
     }
 
     private fun send(index: Int, source: String) {
-        // While the car's video player is on screen the wheel drives it: a CarPlay play/pause would
-        // make the iPhone end the video session.
-        if (CarPlayVideo.onMediaKey(index)) {
-            Log.i(TAG, "media key $source -> car video player $index")
-            return
-        }
         val sent = synchronized(this) { controller }?.sendMediaButton(index) ?: false
         Log.i(TAG, "media key $source -> CarPlay $index sent=$sent")
     }

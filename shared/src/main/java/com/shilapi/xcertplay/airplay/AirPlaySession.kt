@@ -73,10 +73,6 @@ class AirPlaySession(
     internal var deviceBtMac = ""
     internal val activeStreams = linkedSetOf<Int>()
 
-    /** Counts the iPhone's cluster stream setups; 0 while no cluster stream is up. */
-    @Volatile var clusterStream = 0
-        private set
-    private var clusterStreamSetups = 0
 
     private val closed = AtomicBoolean(false)
     private val notified = AtomicBoolean(false)
@@ -130,19 +126,6 @@ class AirPlaySession(
         }
         teardown()
         if (notified.compareAndSet(false, true)) listener.onSessionEnded(this)
-    }
-
-    /**
-     * Asks the iPhone to draw CarPlay's cluster UI on the alt screen (showUI with the display's URL,
-     * then a keyframe) or to stop drawing it (stopUI). The stream stays up either way; CarKit handles
-     * both as car-initiated commands for a screen UUID.
-     */
-    fun setClusterUiShown(shown: Boolean): Boolean {
-        val uuid = AirPlayInfoPlist.ALT_UUID
-        if (!shown) return sendCommand(mapOf("type" to "stopUI", "params" to mapOf("uuid" to uuid)))
-        val url = config.cluster?.initialUrl ?: return false
-        return sendCommand(mapOf("type" to "showUI", "params" to mapOf("uuid" to uuid, "url" to url))) &&
-            sendCommand(mapOf("type" to "forceKeyFrame", "params" to mapOf("uuid" to uuid)))
     }
 
     fun sendCommand(command: Map<String, Any?>): Boolean = synchronized(eventWriteLock) {
@@ -518,7 +501,6 @@ class AirPlaySession(
                     debugLog("airplay screen stream type=$type dataPort=${port ?: "rejected"}")
                     if (port != null) {
                         activeStreams.add(type)
-                        if (type == STREAM_TYPE_ALT_SCREEN) clusterStream = ++clusterStreamSetups
                         result.add(linkedMapOf("type" to type, "dataPort" to port))
                     }
                 }
@@ -596,7 +578,6 @@ class AirPlaySession(
         } else {
             types.forEach { type -> if (activeStreams.remove(type)) media.onTeardown(this, type) }
         }
-        if (STREAM_TYPE_ALT_SCREEN !in activeStreams) clusterStream = 0
         return RtspMessage.Response(status = 200)
     }
 
@@ -770,7 +751,6 @@ internal fun setupEnabledFeatures(config: AirPlayConfig, proposed: List<*>?): Li
     if (config.hevc) features.add("hevc")
     features.add("iAPChannel")
     features.add("viewAreas")
-    if (config.cluster != null) features.add("altScreen")
     if (config.videoInCar && proposed.orEmpty().contains(VideoInCar.FEATURE)) features.add(VideoInCar.FEATURE)
     return features
 }

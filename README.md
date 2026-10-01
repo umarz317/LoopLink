@@ -1,59 +1,45 @@
-# DiPlay
+<img src="asset/looplink-logo.svg" alt="LoopLink" width="320">
 
-**CarPlay for compatible BYD Android head units.** Wired and wireless, with the familiar DiAuto interface. Independent app: `com.shihab.diplay`.
+**CarPlay for Android head units.** LoopLink turns an Android head unit into a wired or wireless CarPlay receiver. App ID: `io.loopbreak.looplink`, so it installs alongside DiPlay instead of replacing it.
 
-> **BYD support scope:** These projects focus on BYD cars. They may work on other brands, but other brands are unsupported and there are no plans to add support or fix brand-specific incompatibilities.
+> **Fork notice.** LoopLink is a fork of [DiPlay](https://github.com/shihabal3amri/DiPlay) by shihabal3amri, which is itself based on [xcertplay](https://github.com/shilapi/xcertplay) by shilapi; its settings layout adapts [DiAuto](https://github.com/shihabal3amri/DiAuto). LoopLink removes DiPlay's BYD-specific features and rebrands the app. It is an independent project and is not affiliated with or endorsed by the DiPlay, xcertplay or DiAuto authors.
 
-[Download & website](https://shihabal3amri.github.io/DiPlay/) · [Release](https://github.com/shihabal3amri/DiPlay/releases/tag/v0.2.8) · [Report a problem](https://github.com/shihabal3amri/DiPlay/issues/new/choose)
+## What it does
 
-![DiPlay home](site/assets/home.png)
+- Wired USB and wireless CarPlay (Wi-Fi Direct or the car's existing hotspot) with local authentication.
+- CarPlay size, resolution, frame rate, audio routing and optional iPhone location reporting.
+- Standard Android media and voice keys control CarPlay playback and Siri.
+- Local diagnostic reports, saved to `Downloads/LoopLink`; nothing is sent automatically.
 
-## 0.2.8 — public preview
+Compared with DiPlay, LoopLink has **no** BYD features: no windshield HUD or instrument-cluster navigation, dashboard map, ADB battery, wheel-speed or parked-video reporting, and no BYD steering-wheel keycodes.
 
-Install on the **car**, not the iPhone. No jailbreak, dongle, Mac, account or authentication server is required for use. Core CarPlay does not require ADB; optional dashboard, battery, wheel-speed and parked-video features do. Your head unit must permit APK installation. Wireless supports Wi-Fi Direct or the car’s existing hotspot; Wi-Fi Direct requires Android 10+; the APK supports Android 9+ for wired use.
+## Status
 
-- Wired USB and wireless CarPlay with local authentication.
-- BYD HUD navigation with arrows, distance and street names on verified firmware.
-- Car hotspot support, improved audio buffering and saved receive diagnostics.
-- Automatic address discovery, fixed-channel Wi-Fi fallbacks and successful-configuration memory.
-- Icon/text size, resolution and frame rate; applying a display change reconnects CarPlay.
-- Local diagnostic export. Reports are sent only if you choose to share them.
-- Separate installation alongside DiAuto. Run one projection app at a time.
+Not yet tested on a head unit or with an iPhone. The build passes its unit tests and lint, and the app UI was checked in an Android head-unit emulator, which cannot run a CarPlay session. Behaviour on real head units is inherited from DiPlay 0.2.8 but has not been revalidated after the BYD removal. This is **not an Apple-certified product**.
 
-This is **not an Apple-certified product**. The APK bundles an experimental accessory identity recovered from public Carlinkit firmware, not a newly provisioned MFi identity for DiPlay. A bundled private key is extractable. Acceptance after future iOS updates, reliability across head units and suitability of that identity for general distribution are unresolved. This release invites community testing; it is not a guarantee of universal compatibility.
+## Build
 
-Earlier releases were tested on the development DiLink5.1 car: live windshield guidance and street names work, Car hotspot now starts CarPlay, and Wi-Fi Direct performance is substantially improved. Occasional audio cutouts remain and are deferred to a later update. The new features were tested on a BYD Tang with DiLink 5.0 and an iPhone 15 Pro on iOS 27; wheel-speed dead reckoning in tunnels remains unverified. Broader head-unit and iOS compatibility is not guaranteed. The HUD firmware scope and cleanup limits are documented in [BYD navigation](docs/BYD_NAVIGATION.md).
+Requirements: JDK 25, Android SDK 37, NDK 28.2.13676358.
 
-## What’s new in 0.2.8
+```sh
+./gradlew :shared:testDebugUnitTest :common:testDebugUnitTest :mobile:lintDebug :mobile:assembleDebug
+```
 
-- App interface in English, Simplified Chinese, Arabic, Russian and Spanish; synchronized Android app-language settings.
-- Steering-wheel media controls and long-press Siri on supported BYD firmware while CarPlay is on screen.
-- Dashboard display choices: map, turn card, or both; corrected dashboard keyframe recovery.
-- Optional ADB feature on supported DiLink 5.0: pause the dashboard map stream when its display mode hides the map.
-- Optional ADB battery reporting for Apple Maps, with warning threshold, charging-connector selection and a checked reconnect action.
-- Wireless location reporting continues across the Bluetooth-to-Wi-Fi handoff; USB and wireless updates are limited to one per second.
-- Optional ADB wheel-speed and gear reporting lets iPhone navigation estimate movement when GPS is unavailable. Tunnel use still needs validation.
-- Optional iOS 27 video playback on the car screen while parked, with iPhone, touchscreen and steering-wheel controls. Playback closes when the car leaves P.
-- DRM-protected video such as Apple TV+ is not supported; DiPlay is not a licensed FairPlay receiver. Netflix does not support AirPlay.
+A plain debug build has no accessory identity and cannot connect to an iPhone. A build that can authenticate needs an accessory identity supplied with `DIPLAY_AUTH_ASSETS_DIR` (`offline-mfi/identity.pk8` and `offline-mfi/certificate.p7b`); those files are never part of this repository, and `scripts/check_public_tree.py` fails if one is tracked.
 
 ## Documentation
+
+The guides below are inherited from DiPlay and may still refer to it; they describe the same receiver.
 
 - [Install and connect](docs/INSTALL.md)
 - [Compatibility and troubleshooting](docs/COMPATIBILITY.md)
 - [Privacy and diagnostic reports](docs/PRIVACY.md)
 - [Build from source](docs/BUILD.md)
-- [Validation](docs/VALIDATION.md)
 - [Release notes](CHANGELOG.md)
 - [Credits and licenses](docs/THIRD_PARTY_NOTICES.md)
 
-The website is available in English, Arabic, Russian, Spanish and Simplified Chinese. The app interface supports those same five languages. Choose the app language in Settings; on Android 13+, it stays synchronized with Android’s per-app language setting.
+## License
 
-## Source and credits
+LoopLink is free software under the **GNU General Public License v3.0**; see [LICENSE](LICENSE). The settings screen adapts DiAuto and is marked AGPL-3.0-only; its license is in `docs/licenses/`. As a derivative of GPL-3.0 code, LoopLink must stay under the same terms: distributed copies and modifications must keep this license and make their source available.
 
-Based on [xcertplay](https://github.com/shilapi/xcertplay), GPL-3.0. The home/settings UI and website adapt [DiAuto](https://github.com/shihabal3amri/DiAuto), AGPL-3.0; that license is included in `docs/licenses`. Preserve those notices when distributing modifications. CarPlay and its icon belong to Apple Inc.; no Apple or BYD affiliation or endorsement is implied.
-
-This repository starts with a clean public source snapshot. Local research, tester reports and release-signing secrets are excluded. The complete source corresponding to the APK is provided with every release; experimental runtime identity assets are described separately in the build instructions and notices.
-
-## Local release packaging
-
-The release APK intentionally contains the experimental accessory identity. The Git repository and source archive exclude all accessory and Android signing keys; tests generate synthetic identities at runtime. Source/CI builds omit runtime identity assets by default. Local release builds explicitly select an external asset directory. Publishing the APK makes its bundled identity extractable; building locally does not preserve that identity's confidentiality.
+Copyright © 2026 Loopbreak for LoopLink's changes; the original code remains copyright its respective authors. CarPlay and iPhone are trademarks of Apple Inc.; no Apple affiliation or endorsement is implied.

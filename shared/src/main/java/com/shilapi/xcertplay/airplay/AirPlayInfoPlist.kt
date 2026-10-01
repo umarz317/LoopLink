@@ -28,7 +28,6 @@ object AirPlayInfoPlist {
         val displays = arrayListOf<Any?>(
             displayEntry(config.main, STREAM_TYPE_MAIN_SCREEN, MAIN_UUID),
         )
-        config.cluster?.let { displays.add(displayEntry(it, STREAM_TYPE_ALT_SCREEN, ALT_UUID)) }
 
         val info = linkedMapOf<String, Any?>(
             "sourceVersion" to config.sourceVersion,

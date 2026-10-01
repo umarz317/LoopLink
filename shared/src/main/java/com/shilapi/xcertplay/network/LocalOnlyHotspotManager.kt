@@ -189,7 +189,7 @@ class LocalOnlyHotspotManager(context: Context, private val onDiagnostic: (Strin
             try {
                 val builder = SoftApConfiguration.Builder()
                 SoftApConfiguration.Builder::class.java.getMethod("setSsid", String::class.java)
-                    .invoke(builder, "DiPlay-${UUID.randomUUID().toString().take(6)}")
+                    .invoke(builder, "LoopLink-${UUID.randomUUID().toString().take(6)}")
                 SoftApConfiguration.Builder::class.java.getMethod("setPassphrase", String::class.java, Int::class.javaPrimitiveType)
                     .invoke(builder, UUID.randomUUID().toString().replace("-", "").take(20), SoftApConfiguration.SECURITY_TYPE_WPA2_PSK)
                 // Request the station's 5 GHz channel, or 36 without a 5 GHz station.

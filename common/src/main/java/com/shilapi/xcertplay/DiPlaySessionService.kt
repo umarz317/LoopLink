@@ -27,8 +27,8 @@ class DiPlaySessionService : Service() {
         val open = PendingIntent.getActivity(this, 0, Intent(this, CarPlayHostActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         val stop = PendingIntent.getService(this, 1, Intent(this, DiPlaySessionService::class.java).setAction(ACTION_STOP), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         val notification = Notification.Builder(this, CHANNEL)
-            .setSmallIcon(R.drawable.ic_diplay_notification)
-            .setContentTitle("DiPlay")
+            .setSmallIcon(R.drawable.ic_looplink_notification)
+            .setContentTitle(getString(R.string.app_name))
             .setContentText("CarPlay connection running")
             .setContentIntent(open).setOngoing(true)
             .addAction(Notification.Action.Builder(null, "Disconnect", stop).build()).build()
@@ -48,13 +48,11 @@ class DiPlaySessionService : Service() {
         return START_NOT_STICKY
     }
     override fun onTaskRemoved(rootIntent: Intent?) {
-        // BYD's recents force-stops the package ~10 ms after removing the task: end guidance first.
-        com.shilapi.xcertplay.hud.BydNavigationOutputs.endNow()
         CarPlayBackgroundSession.stop()
         stopSelf()
     }
     companion object {
-        const val ACTION_STOP = "com.shihab.diplay.DISCONNECT"
+        const val ACTION_STOP = "io.loopbreak.looplink.DISCONNECT"
         private const val CHANNEL = "diplay_connection"
     }
 }

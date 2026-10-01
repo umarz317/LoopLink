@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- LoopLink mark: a loop that breaks into shrinking links. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <path android:fillColor="#FFFFFFFF" android:pathData="M17.83,77.00 A42.0,42.0 0 1 1 91.97,51.47 L75.98,50.91 A26.0,26.0 0 1 0 30.08,66.71Z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M90.99,56.49 A41.5,41.5 0 0 1 84.80,72.60 L72.22,64.43 A26.5,26.5 0 0 0 76.17,54.15Z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M81.02,76.03 A40.5,40.5 0 0 1 70.25,85.07 L63.75,73.82 A27.5,27.5 0 0 0 71.07,67.68Z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M65.43,86.36 A39.5,39.5 0 0 1 54.13,89.28 L52.98,78.34 A28.5,28.5 0 0 0 61.14,76.23Z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M49.33,88.49 A38.5,38.5 0 0 1 40.04,87.19 L42.36,78.49 A29.5,29.5 0 0 0 49.49,79.50Z" />
+</vector>
