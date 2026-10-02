@@ -26,29 +26,47 @@ object AirPlayPortSelector {
         for (port in fallbackPorts) {
             if (port == preferredPort) continue
             tryBind(address, port)?.let { server ->
-                onFallback(preferredPort, server.localPort)
-                return server
+                return reportFallback(server, preferredPort, onFallback)
             }
         }
-        val server = ServerSocket()
-        try {
-            server.bind(InetSocketAddress(address, 0))
-        } catch (error: Exception) {
-            server.close()
-            throw error
-        }
-        onFallback(preferredPort, server.localPort)
-        return server
+        return reportFallback(bindPort(address, 0), preferredPort, onFallback)
     }
 
-    private fun tryBind(address: InetAddress, port: Int): ServerSocket? {
+    private fun tryBind(address: InetAddress, port: Int): ServerSocket? = try {
+        bindPort(address, port)
+    } catch (_: BindException) {
+        null
+    }
+
+    private fun bindPort(address: InetAddress, port: Int): ServerSocket {
         val server = ServerSocket()
         return try {
             server.bind(InetSocketAddress(address, port))
             server
-        } catch (_: BindException) {
+        } catch (error: Throwable) {
+            closeAfterFailure(server, error)
+            throw error
+        }
+    }
+
+    private fun reportFallback(
+        server: ServerSocket,
+        preferredPort: Int,
+        onFallback: (Int, Int) -> Unit,
+    ): ServerSocket = try {
+        onFallback(preferredPort, server.localPort)
+        server
+    } catch (error: Throwable) {
+        // Ownership transfers to the caller only after notification succeeds.
+        closeAfterFailure(server, error)
+        throw error
+    }
+
+    private fun closeAfterFailure(server: ServerSocket, error: Throwable) {
+        try {
             server.close()
-            null
+        } catch (closeError: Throwable) {
+            error.addSuppressed(closeError)
         }
     }
 }
