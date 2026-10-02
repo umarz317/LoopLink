@@ -145,6 +145,11 @@ class Iap2UsbMuxHost private constructor(
             Log.i("xcertplay-usb", "discarding stale usbmux TCP frame before version reply")
         }
         Log.i("xcertplay-usb", "usbmux version accepted: ${reply.word8}")
+        // iOS 27 may transfer padding bytes after the 20-byte version reply while keeping
+        // its declared length at 20. They are not a frame; discard them before SETUP.
+        synchronized(stateLock) {
+            receiveBuffer = discardUsbMuxHandshakeRemainder(receiveBuffer)
+        }
         sendFrame(PROTOCOL_SETUP, byteArrayOf(SETUP_VALUE.toByte()))
         readerThread = Thread(::readerLoop, "iap2-usbmux-reader").apply {
             isDaemon = true
@@ -334,6 +339,9 @@ class Iap2UsbMuxHost private constructor(
                 (source[offset + 3].toInt() and 0xff)
     }
 }
+
+internal fun discardUsbMuxHandshakeRemainder(buffer: ByteArray): ByteArray =
+    if (buffer.isEmpty()) buffer else ByteArray(0)
 
 /** A blocking TCP byte stream carried by [Iap2UsbMuxHost]. */
 class Iap2UsbMuxTcpConnection internal constructor(
