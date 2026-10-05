@@ -14,6 +14,12 @@ data class MicrophoneConfig(
     val key: ByteArray,
     val codec: AudioCodecKind = AudioCodecKind.LPCM,
     val bitrate: Int? = null,
+    /**
+     * The clock the iPhone negotiated for an Opus stream (16, 24 or 48 kHz). DiPlay always captures and
+     * encodes at 48 kHz, but the RTP timestamps must count in the negotiated rate: Siri picks Opus 24 kHz,
+     * where 20 ms is 480 samples, not 960.
+     */
+    val opusClockRate: Int = OPUS_CAPTURE_RATE,
 ) {
     val samplesPerPacket: Int
         get() = if (codec == AudioCodecKind.OPUS) {
@@ -22,11 +28,25 @@ data class MicrophoneConfig(
             maxOf(1, sampleRate * frameMillis / 1000)
         }
 
+    /** How far each packet moves the RTP timestamp, on the negotiated clock. */
+    val rtpSamplesPerPacket: Int
+        get() = if (codec == AudioCodecKind.OPUS) opusClockRate * OPUS_FRAME_MILLIS / 1000 else samplesPerPacket
+
     val frameBytes: Int
         get() = samplesPerPacket * channels * 2
 
-    private companion object {
-        const val OPUS_SAMPLES_PER_PACKET = 960
+    companion object {
+        private const val OPUS_SAMPLES_PER_PACKET = 960
+        private const val OPUS_CAPTURE_RATE = 48_000
+        private const val OPUS_FRAME_MILLIS = 20
+
+        /** The Opus clock for the audioFormat bits the iPhone chose: 16, 24 or 48 kHz. */
+        fun opusClockRate(formatBits: Long): Int = when {
+            formatBits and 0x40000000L != 0L -> 48_000
+            formatBits and 0x20000000L != 0L -> 24_000
+            formatBits and 0x10000000L != 0L -> 16_000
+            else -> OPUS_CAPTURE_RATE
+        }
     }
 }
 

@@ -49,4 +49,36 @@ class MicrophonePacketizerTest {
             ),
         )
     }
+
+    @Test
+    fun opusTimestampsCountInTheClockTheIphoneChose() {
+        // Siri asks for Opus 24 kHz (0x20000000) and calls for Opus 48 kHz (0x40000000); DiPlay still
+        // captures 20 ms at 48 kHz, but each packet moves the RTP clock by 20 ms of the chosen rate.
+        assertEquals(24_000, MicrophoneConfig.opusClockRate(0x20000000L))
+        assertEquals(48_000, MicrophoneConfig.opusClockRate(0x40000000L))
+        assertEquals(16_000, MicrophoneConfig.opusClockRate(0x10000000L))
+        assertEquals(48_000, MicrophoneConfig.opusClockRate(0L))
+
+        val siri = config(AudioCodecKind.OPUS, opusClockRate = 24_000)
+        assertEquals(960, siri.samplesPerPacket)
+        assertEquals(1920, siri.frameBytes)
+        assertEquals(480, siri.rtpSamplesPerPacket)
+        assertEquals(960, config(AudioCodecKind.OPUS).rtpSamplesPerPacket)
+        assertEquals(320, config(AudioCodecKind.OPUS, opusClockRate = 16_000).rtpSamplesPerPacket)
+        // PCM keeps its own rate: 20 ms at 16 kHz.
+        assertEquals(320, config(AudioCodecKind.LPCM, sampleRate = 16_000).rtpSamplesPerPacket)
+    }
+
+    private fun config(codec: AudioCodecKind, sampleRate: Int = 48_000, opusClockRate: Int = 48_000) = MicrophoneConfig(
+        audioType = "speechrecognition",
+        sampleRate = sampleRate,
+        channels = 1,
+        payloadType = 100,
+        frameMillis = 20,
+        host = java.net.InetAddress.getLoopbackAddress(),
+        port = 1,
+        key = ByteArray(32),
+        codec = codec,
+        opusClockRate = opusClockRate,
+    )
 }
