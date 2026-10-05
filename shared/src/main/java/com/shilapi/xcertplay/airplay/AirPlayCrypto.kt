@@ -12,7 +12,13 @@ import org.bouncycastle.crypto.params.KeyParameter
 import org.bouncycastle.crypto.params.X25519PrivateKeyParameters
 import org.bouncycastle.crypto.params.X25519PublicKeyParameters
 import org.bouncycastle.crypto.signers.Ed25519Signer
+import java.nio.ByteBuffer
+import java.security.GeneralSecurityException
 import java.security.SecureRandom
+import javax.crypto.AEADBadTagException
+import javax.crypto.Cipher
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
 
 /** BouncyCastle-backed primitives for the CarPlay pairing and control channel. */
 object AirPlayCrypto {
@@ -20,6 +26,29 @@ object AirPlayCrypto {
     private const val NONCE_SIZE = 12
     private const val LABEL_SIZE = 8
     private val random = SecureRandom()
+    // Android's Conscrypt name first, then a desktop JDK's (unit tests).
+    private val PLATFORM_CHACHA_NAMES = listOf("ChaCha20/Poly1305/NoPadding", "ChaCha20-Poly1305")
+
+    /**
+     * The platform's ChaCha20-Poly1305 (Conscrypt on Android), used before BouncyCastle's Java one;
+     * every video frame goes through it. Android's Cipher creates a new Conscrypt cipher on each init,
+     * so the per-thread Cipher only saves the lookup. The per-thread direct buffers matter more: with
+     * them Conscrypt opens and seals the message where it is, instead of copying it into a buffer of
+     * its own that grows to twice the message size.
+     */
+    private class PlatformChacha(val cipher: Cipher) {
+        var input: ByteBuffer = ByteBuffer.allocateDirect(0)
+        var output: ByteBuffer = ByteBuffer.allocateDirect(0)
+    }
+
+    private val platformState = ThreadLocal.withInitial<PlatformChacha?> {
+        PLATFORM_CHACHA_NAMES.firstNotNullOfOrNull { runCatching { Cipher.getInstance(it) }.getOrNull() }
+            ?.let(::PlatformChacha)
+    }
+
+    /** Which ChaCha20-Poly1305 implementation this thread uses, for diagnostics. */
+    val chachaImplementation: String
+        get() = platformState.get()?.cipher?.provider?.name ?: "BouncyCastle"
 
     data class X25519KeyPair(val privateKey: ByteArray, val publicKey: ByteArray)
     data class Ed25519KeyPair(val privateKey: ByteArray, val publicKey: ByteArray)
@@ -78,6 +107,50 @@ object AirPlayCrypto {
         nonce: ByteArray,
         plaintext: ByteArray,
         aad: ByteArray = ByteArray(0),
+    ): ByteArray = platformChacha(Cipher.ENCRYPT_MODE, key, nonce, plaintext, aad)
+        ?: chachaSealBouncyCastle(key, nonce, plaintext, aad)
+
+    fun chachaOpen(
+        key: ByteArray,
+        nonce: ByteArray,
+        ciphertextAndTag: ByteArray,
+        aad: ByteArray = ByteArray(0),
+    ): ByteArray = platformChacha(Cipher.DECRYPT_MODE, key, nonce, ciphertextAndTag, aad)
+        ?: chachaOpenBouncyCastle(key, nonce, ciphertextAndTag, aad)
+
+    /**
+     * Null when the platform has no ChaCha20-Poly1305 or refuses this use of it (a desktop JDK rejects
+     * reusing a key and nonce for encryption, which tests do); a failed tag still throws.
+     */
+    internal fun platformChacha(mode: Int, key: ByteArray, nonce: ByteArray, input: ByteArray, aad: ByteArray): ByteArray? {
+        val state = platformState.get() ?: return null
+        return try {
+            val cipher = state.cipher
+            cipher.init(mode, SecretKeySpec(key, "ChaCha20"), IvParameterSpec(nonce))
+            if (aad.isNotEmpty()) cipher.updateAAD(aad)
+            val source = sized(state.input, input.size).also { state.input = it }
+            source.put(input).flip()
+            val target = sized(state.output, cipher.getOutputSize(input.size).coerceAtLeast(0)).also { state.output = it }
+            val written = cipher.doFinal(source, target)
+            target.flip()
+            ByteArray(written).also { target.get(it) }
+        } catch (failure: AEADBadTagException) {
+            throw failure
+        } catch (_: GeneralSecurityException) {
+            null
+        }
+    }
+
+    /** [buffer], or a larger direct one, cleared and limited to [size]. */
+    private fun sized(buffer: ByteBuffer, size: Int): ByteBuffer =
+        (if (buffer.capacity() >= size) buffer else ByteBuffer.allocateDirect(maxOf(size, buffer.capacity() * 2)))
+            .apply { clear(); limit(size) }
+
+    internal fun chachaSealBouncyCastle(
+        key: ByteArray,
+        nonce: ByteArray,
+        plaintext: ByteArray,
+        aad: ByteArray = ByteArray(0),
     ): ByteArray {
         val cipher = ChaCha20Poly1305()
         cipher.init(true, AEADParameters(KeyParameter(key), MAC_BITS, nonce, aad))
@@ -87,7 +160,7 @@ object AirPlayCrypto {
         return output
     }
 
-    fun chachaOpen(
+    internal fun chachaOpenBouncyCastle(
         key: ByteArray,
         nonce: ByteArray,
         ciphertextAndTag: ByteArray,
