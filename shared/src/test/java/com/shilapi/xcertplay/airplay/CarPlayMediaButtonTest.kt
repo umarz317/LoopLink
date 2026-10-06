@@ -20,6 +20,13 @@ class CarPlayMediaButtonTest {
     }
 
     @Test
+    fun bydSteeringWheelKeysAreHandled() {
+        assertEquals(CarPlayMediaButton.PLAY_PAUSE, CarPlayMediaButton.forKeyCode(CarPlayMediaButton.KEYCODE_BYD_AUTO_MEDIA_PLAY_PAUSE))
+        assertTrue(CarPlayMediaButton.opensSiri(CarPlayMediaButton.KEYCODE_BYD_AUTO_MEDIA_VOICE))
+        assertTrue(CarPlayMediaButton.opensSiri(CarPlayMediaButton.KEYCODE_BYD_AUTO_MEDIA_VOICE_LONG))
+    }
+
+    @Test
     fun theVoiceKeyOpensSiri() {
         assertTrue(CarPlayMediaButton.opensSiri(KeyEvent.KEYCODE_VOICE_ASSIST))
         assertFalse(CarPlayMediaButton.opensSiri(KeyEvent.KEYCODE_MEDIA_NEXT))

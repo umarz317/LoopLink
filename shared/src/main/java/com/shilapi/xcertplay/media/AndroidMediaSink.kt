@@ -965,7 +965,10 @@ private class AudioRenderer(
 
     private fun usageFor(channel: AudioChannel): Int = when (channel) {
         AudioChannel.MEDIA -> AudioAttributes.USAGE_MEDIA
-        AudioChannel.PHONE -> AudioAttributes.USAGE_VOICE_COMMUNICATION
+        // Call audio is silent on many head units: USAGE_VOICE_COMMUNICATION goes to a phone bus
+        // that is unrouted or on its own volume. Like Siri, calls play on the media output unless
+        // the advanced automotive mapping is on.
+        AudioChannel.PHONE -> if (advancedAudioChannelMapping) AudioAttributes.USAGE_VOICE_COMMUNICATION else AudioAttributes.USAGE_MEDIA
         // Many aftermarket head units give USAGE_ASSISTANT its own, quieter volume that the
         // volume knob does not reach, so Siri plays on the media volume unless the advanced
         // automotive mapping is on. It keeps the assistant buffer and focus either way.

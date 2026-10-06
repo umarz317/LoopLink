@@ -65,27 +65,13 @@ internal class MicrophoneUplink(private val config: MicrophoneConfig) : Closeabl
             return false
         }
         val bufferSize = maxOf(minBuffer * 2, config.frameBytes * 4)
-        val nextRecorder = try {
-            AudioRecord.Builder()
-                .setAudioSource(source)
-                .setAudioFormat(
-                    AndroidAudioFormat.Builder()
-                        .setEncoding(AndroidAudioFormat.ENCODING_PCM_16BIT)
-                        .setSampleRate(config.sampleRate)
-                        .setChannelMask(channelMask)
-                        .build(),
-                )
-                .setBufferSizeInBytes(bufferSize)
-                .build()
-        } catch (error: Exception) {
-            Log.e(TAG, "microphone recorder creation failed", error)
-            nextEncoder?.close()
-            running.set(false)
-            return false
-        }
-        if (nextRecorder.state != AudioRecord.STATE_INITIALIZED) {
-            Log.w(TAG, "microphone recorder failed to initialize")
-            nextRecorder.release()
+        // Many head units have no VOICE_COMMUNICATION or VOICE_RECOGNITION input; the plain mic works.
+        val nextRecorder = createRecorder(source, channelMask, bufferSize)
+            ?: (if (source != MediaRecorder.AudioSource.MIC) {
+                Log.w(TAG, "microphone source $source unavailable; falling back to MIC")
+                createRecorder(MediaRecorder.AudioSource.MIC, channelMask, bufferSize)
+            } else null)
+        if (nextRecorder == null) {
             nextEncoder?.close()
             running.set(false)
             return false
@@ -125,6 +111,29 @@ internal class MicrophoneUplink(private val config: MicrophoneConfig) : Closeabl
             release()
             false
         }
+    }
+
+    private fun createRecorder(source: Int, channelMask: Int, bufferSize: Int): AudioRecord? {
+        val recorder = try {
+            AudioRecord.Builder()
+                .setAudioSource(source)
+                .setAudioFormat(
+                    AndroidAudioFormat.Builder()
+                        .setEncoding(AndroidAudioFormat.ENCODING_PCM_16BIT)
+                        .setSampleRate(config.sampleRate)
+                        .setChannelMask(channelMask)
+                        .build(),
+                )
+                .setBufferSizeInBytes(bufferSize)
+                .build()
+        } catch (error: Exception) {
+            Log.e(TAG, "microphone recorder creation failed source=$source", error)
+            return null
+        }
+        if (recorder.state == AudioRecord.STATE_INITIALIZED) return recorder
+        Log.w(TAG, "microphone recorder failed to initialize source=$source")
+        recorder.release()
+        return null
     }
 
     private fun capture(recorder: AudioRecord, socket: DatagramSocket) {
