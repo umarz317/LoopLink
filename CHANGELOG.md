@@ -1,3 +1,11 @@
+# LoopLink 0.3.1 — 2026-10-06
+
+- Play call audio on the media output so calls are heard through the head unit; the call and Siri microphone falls back to the plain mic when the voice source is unavailable.
+- Steering-wheel media and voice keys now work again, including the BYD keycodes, and are also handled when they reach the CarPlay screen directly.
+- Explain connection failures in plain language: Bluetooth off or unavailable, missing permissions, an unpaired or ambiguous iPhone, car hotspot problems, declined USB access and dropped links, in all five languages. Wireless CarPlay starts by itself once Bluetooth is turned on.
+- Settings keep their scroll position when you change an option or go back.
+- Unit tests, lint and the debug build pass. Not tested on a head unit or with an iPhone.
+
 # LoopLink 0.3.0 — 2026-10-01
 
 - Use the play-button logo consistently in the launcher and documentation.
