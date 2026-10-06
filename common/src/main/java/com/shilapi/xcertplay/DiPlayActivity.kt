@@ -42,6 +42,10 @@ import java.util.Locale
 class DiPlayActivity : ComponentActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private var page = "home"
+    // render() rebuilds the whole page, so the scroll offset is carried over by hand.
+    private var scrollView: ScrollView? = null
+    private var renderedPage: String? = null
+    private val scrollPositions = mutableMapOf<String, Int>()
     private var pendingCarHotspotSetup = false
     private var setupError: String? = null
     private var status: TextView? = null
@@ -60,7 +64,9 @@ class DiPlayActivity : ComponentActivity() {
         override fun run() { refreshStatus(); handler.postDelayed(this, 1000) }
     }
     private val bluetoothPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) choosePhone() else permissionHelp(getString(R.string.nearby_devices), getString(R.string.allow_nearby_devices_so_diplay_can_connect_to_your_paired))
+        if (granted && pendingWireless && DiPlayPreferences.phoneAddress(this) != null) { pendingWireless = false; connect(true) }
+        else if (granted) choosePhone()
+        else { pendingWireless = false; permissionHelp(getString(R.string.nearby_devices), getString(R.string.allow_nearby_devices_so_diplay_can_connect_to_your_paired)) }
     }
     private val locationPermission = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
         if (hasPreciseLocation()) return@registerForActivityResult reconnectForLocation()
@@ -133,6 +139,13 @@ class DiPlayActivity : ComponentActivity() {
 
     private fun render() {
         status = null; connectButton = null; disconnectButton = null; lastRunning = null
+        // Changing a setting re-renders the same page and Back returns to the parent: keep the
+        // reader's place in both. Opening a page starts at the top.
+        val previous = renderedPage
+        if (previous != null) scrollPositions[previous] = scrollView?.scrollY ?: 0
+        val keepPlace = page == previous ||
+            (previous != null && previous != "home" && page == (if (previous == "settings") "home" else "settings"))
+        val restoreY = if (keepPlace) scrollPositions[page] ?: 0 else 0
         val scroll = ScrollView(this).apply {
             setBackgroundColor(BG); isFillViewport = true; clipToPadding = false; isVerticalScrollBarEnabled = false
         }
@@ -178,6 +191,16 @@ class DiPlayActivity : ComponentActivity() {
             else -> home(content)
         }
         setContentView(scroll)
+        scrollView = scroll
+        renderedPage = page
+        if (restoreY > 0) {
+            scroll.viewTreeObserver.addOnGlobalLayoutListener(object : android.view.ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    scroll.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    scroll.scrollTo(0, restoreY)
+                }
+            })
+        }
         refreshStatus()
     }
 
@@ -623,8 +646,13 @@ class DiPlayActivity : ComponentActivity() {
             return
         }
         if (wireless && carHotspotOff()) { carHotspotOffDialog(); return }
-        if (wireless && DiPlayPreferences.phoneAddress(this) == null) {
-            pendingWireless = true; choosePhone(); return
+        if (wireless) {
+            // Wireless CarPlay starts over Bluetooth: say what's missing here, not after a silent failure.
+            if (Build.VERSION.SDK_INT >= 31 && checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                pendingWireless = true; bluetoothPermission.launch(Manifest.permission.BLUETOOTH_CONNECT); return
+            }
+            if (getSystemService(BluetoothManager::class.java)?.adapter?.isEnabled != true) { bluetoothOffDialog(); return }
+            if (DiPlayPreferences.phoneAddress(this) == null) { pendingWireless = true; choosePhone(); return }
         }
         val preferences = getSharedPreferences("diplay", MODE_PRIVATE)
         if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED && !preferences.getBoolean("notification_asked", false)) {
@@ -648,12 +676,7 @@ class DiPlayActivity : ComponentActivity() {
             bluetoothPermission.launch(Manifest.permission.BLUETOOTH_CONNECT); return
         }
         val adapter = getSystemService(BluetoothManager::class.java)?.adapter
-        if (adapter == null || !adapter.isEnabled) {
-            AlertDialog.Builder(this).setTitle(getString(R.string.turn_on_bluetooth))
-                .setMessage(getString(R.string.enable_the_car_s_bluetooth_and_pair_your_iphone_first))
-                .setPositiveButton(getString(R.string.open_bluetooth)) { _, _ -> openSystem(Intent(Settings.ACTION_BLUETOOTH_SETTINGS)) }
-                .setNegativeButton(getString(R.string.later), null).show(); return
-        }
+        if (adapter == null || !adapter.isEnabled) { bluetoothOffDialog(); return }
         val devices = runCatching { adapter.bondedDevices.sortedBy { it.name ?: "" } }.getOrDefault(emptyList())
         if (devices.isEmpty()) {
             AlertDialog.Builder(this).setTitle(getString(R.string.pair_your_iphone))
@@ -673,6 +696,14 @@ class DiPlayActivity : ComponentActivity() {
                 if (start) connect(true)
             }.setNeutralButton(getString(R.string.pair_another)) { _, _ -> openSystem(Intent(Settings.ACTION_BLUETOOTH_SETTINGS)) }
             .setNegativeButton(getString(R.string.cancel)) { _, _ -> pendingWireless = false }.show()
+    }
+
+    private fun bluetoothOffDialog() {
+        pendingWireless = false
+        AlertDialog.Builder(this).setTitle(getString(R.string.turn_on_bluetooth))
+            .setMessage(getString(R.string.enable_the_car_s_bluetooth_and_pair_your_iphone_first))
+            .setPositiveButton(getString(R.string.open_bluetooth)) { _, _ -> openSystem(Intent(Settings.ACTION_BLUETOOTH_SETTINGS)) }
+            .setNegativeButton(getString(R.string.later), null).show()
     }
 
     private fun wirelessHelp() {

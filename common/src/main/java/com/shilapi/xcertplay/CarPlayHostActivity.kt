@@ -1,7 +1,11 @@
 package com.shilapi.xcertplay
 
 import android.Manifest
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.IntentFilter
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -45,6 +49,7 @@ import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -176,6 +181,17 @@ class CarPlayHostActivity : ComponentActivity() {
                 },
             )
             updateHotspotStatusBlock()
+            if (!wirelessPermissionsReady) {
+                val bluetoothMissing = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                    checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED
+                stageStatusView?.text = getString(
+                    if (bluetoothMissing || Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        R.string.allow_nearby_devices_for_diplay_in_the_head_unit_s_app_per
+                    } else {
+                        R.string.allow_precise_location_for_diplay_in_the_head_unit_s_app_p
+                    },
+                )
+            }
             maybeStartCarPlay()
         }
     private val microphonePermission =
@@ -576,12 +592,21 @@ class CarPlayHostActivity : ComponentActivity() {
         applyFullscreenMode()
     }
 
-    // The steering-wheel voice key reaches the focused window; while CarPlay is on screen it opens Siri.
+    // Steering-wheel keys that reach the focused window instead of the media session (vendor
+    // keycodes, or head units that skip the session) drive CarPlay while it is on screen: the voice
+    // key opens Siri and media keys become CarPlay media presses.
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        if (!CarPlayMediaButton.opensSiri(event.keyCode)) return super.dispatchKeyEvent(event)
-        if (event.action == KeyEvent.ACTION_UP) {
-            val sent = controller?.requestSiri() == true
-            appendLog("Siri: voice key ${event.keyCode} sent=$sent")
+        if (CarPlayMediaButton.opensSiri(event.keyCode)) {
+            if (event.action == KeyEvent.ACTION_UP) {
+                val sent = controller?.requestSiri() == true
+                appendLog("Siri: voice key ${event.keyCode} sent=$sent")
+            }
+            return true
+        }
+        val button = CarPlayMediaButton.forKeyCode(event.keyCode) ?: return super.dispatchKeyEvent(event)
+        if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
+            val sent = controller?.sendMediaButton(button) == true
+            appendLog("Media key ${KeyEvent.keyCodeToString(event.keyCode)} -> CarPlay $button sent=$sent")
         }
         return true
     }
@@ -613,6 +638,7 @@ class CarPlayHostActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
+        stopWatchingBluetooth()
         mainHandler.removeCallbacks(applyDisplaySize)
         mainHandler.removeCallbacks(expireOldLogLines)
         currentSurface?.let { surface ->
@@ -3117,6 +3143,7 @@ class CarPlayHostActivity : ComponentActivity() {
         ) {
             return
         }
+        if (bluetoothBlocksStart()) return
         startCarPlay(size)
     }
 
@@ -3372,6 +3399,7 @@ class CarPlayHostActivity : ComponentActivity() {
         message.contains("Allow Nearby devices", true) -> getString(R.string.allow_nearby_devices_for_diplay_in_the_head_unit_s_app_per)
         message.contains("createGroup failed", true) -> getString(R.string.the_head_unit_couldn_t_start_carplay_wi_fi_check_wi_fi_and)
         message.contains("needs a reset", true) -> getString(R.string.a_previous_wi_fi_direct_connection_is_still_running_reset)
+        CarPlayFailure.classify(message) != null -> getString(CarPlayFailure.classify(message)!!.messageRes())
         message.contains("socket", true) || message.contains("RFCOMM", true) -> getString(R.string.your_iphone_isn_t_available_unlock_it_and_check_bluetooth)
         message.contains("unsupported", true) || message.contains("not supported", true) -> getString(R.string.this_head_unit_may_not_support_wireless_carplay_try_a_usb)
         message.contains("denied", true) || message.contains("permission", true) -> getString(R.string.allow_the_connection_permission_to_continue)
@@ -3382,6 +3410,64 @@ class CarPlayHostActivity : ComponentActivity() {
         message.contains("reconnect", true) || message.contains("ended", true) -> getString(R.string.reconnecting_to_your_iphone)
         message.contains("active", true) || message.contains("running", true) -> getString(R.string.opening_carplay)
         else -> getString(R.string.getting_carplay_ready)
+    }
+
+    private fun CarPlayFailure.messageRes(): Int = when (this) {
+        CarPlayFailure.BLUETOOTH_OFF -> R.string.failure_bluetooth_off
+        CarPlayFailure.BLUETOOTH_UNAVAILABLE -> R.string.failure_bluetooth_unavailable
+        CarPlayFailure.BLUETOOTH_PERMISSION -> R.string.allow_nearby_devices_for_diplay_in_the_head_unit_s_app_per
+        CarPlayFailure.IPHONE_UNPAIRED -> R.string.failure_iphone_unpaired
+        CarPlayFailure.IPHONE_AMBIGUOUS -> R.string.failure_iphone_ambiguous
+        CarPlayFailure.IPHONE_UNREACHABLE -> R.string.your_iphone_isn_t_available_unlock_it_and_check_bluetooth
+        CarPlayFailure.CAR_HOTSPOT_OFF -> R.string.failure_car_hotspot_off
+        CarPlayFailure.HOTSPOT_DETAILS_MISSING -> R.string.failure_hotspot_details
+        CarPlayFailure.WIFI_LINK_FAILED -> R.string.the_head_unit_couldn_t_start_carplay_wi_fi_check_wi_fi_and
+        CarPlayFailure.LINK_DROPPED -> R.string.failure_link_dropped
+        CarPlayFailure.USB_DENIED -> R.string.failure_usb_denied
+        CarPlayFailure.SETUP_UNAVAILABLE -> R.string.failure_setup_unavailable
+        CarPlayFailure.SERVICE_UNAVAILABLE -> R.string.failure_service_busy
+    }
+
+    private fun bluetoothAdapter(): BluetoothAdapter? =
+        getSystemService(BluetoothManager::class.java)?.adapter
+
+    /** Wireless CarPlay starts over Bluetooth; say why it can't, and carry on once Bluetooth is on. */
+    private fun bluetoothBlocksStart(): Boolean {
+        if (!wirelessEnabled) return false
+        val adapter = bluetoothAdapter()
+        val failure = when {
+            adapter == null -> CarPlayFailure.BLUETOOTH_UNAVAILABLE
+            !adapter.isEnabled -> CarPlayFailure.BLUETOOTH_OFF
+            else -> {
+                stopWatchingBluetooth()
+                return false
+            }
+        }
+        stageStatusView?.text = getString(failure.messageRes())
+        appendLog("Waiting to start: $failure")
+        if (failure == CarPlayFailure.BLUETOOTH_OFF) watchBluetooth()
+        return true
+    }
+
+    private val bluetoothStateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1) == BluetoothAdapter.STATE_ON) maybeStartCarPlay()
+        }
+    }
+    private var watchingBluetooth = false
+
+    private fun watchBluetooth() {
+        if (watchingBluetooth) return
+        watchingBluetooth = true
+        ContextCompat.registerReceiver(
+            this, bluetoothStateReceiver, IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED), ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
+    }
+
+    private fun stopWatchingBluetooth() {
+        if (!watchingBluetooth) return
+        watchingBluetooth = false
+        runCatching { unregisterReceiver(bluetoothStateReceiver) }
     }
 
     private fun appendLog(message: String) {

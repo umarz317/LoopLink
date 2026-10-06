@@ -366,4 +366,14 @@
     <string name="advanced_hint">Video quality, audio channels and diagnostic reports. Change these only if asked to.</string>
     <string name="car_icon_in_carplay">Home icon in CarPlay</string>
     <string name="car_icon_in_carplay_description">Show the icon that returns to the car’s screen. Changing it reconnects CarPlay.</string>
+    <string name="failure_bluetooth_off">Bluetooth is off. Turn it on in the car’s settings and LoopLink will connect to your iPhone.</string>
+    <string name="failure_bluetooth_unavailable">This head unit has no Bluetooth available, so wireless CarPlay can’t connect. Try a USB cable.</string>
+    <string name="failure_iphone_unpaired">Your iPhone isn’t paired anymore. Pair it again in the car’s Bluetooth settings, then choose it in LoopLink.</string>
+    <string name="failure_iphone_ambiguous">More than one iPhone was found. Choose yours in LoopLink’s connection setup.</string>
+    <string name="failure_car_hotspot_off">The car’s hotspot is off. Turn it on in the car’s settings.</string>
+    <string name="failure_hotspot_details">The car’s hotspot name and password are missing. Enter them in LoopLink’s connection setup.</string>
+    <string name="failure_link_dropped">Your iPhone ended the connection. Reconnecting…</string>
+    <string name="failure_usb_denied">USB access was declined. Unplug your iPhone, plug it back in and tap Allow.</string>
+    <string name="failure_setup_unavailable">CarPlay isn’t ready on this head unit. Close and reopen LoopLink. If it keeps happening, reinstall the app.</string>
+    <string name="failure_service_busy">The CarPlay service couldn’t start. Close LoopLink completely and open it again.</string>
 </resources>

@@ -355,4 +355,14 @@
     <string name="advanced_hint">جودة الفيديو وقنوات الصوت وتقارير التشخيص. غيّرها فقط عند الطلب.</string>
     <string name="car_icon_in_carplay">أيقونة الرئيسية في CarPlay</string>
     <string name="car_icon_in_carplay_description">إظهار الأيقونة التي تعود إلى شاشة السيارة. يؤدي التغيير إلى إعادة اتصال CarPlay.</string>
+    <string name="failure_bluetooth_off">البلوتوث متوقف. شغّله من إعدادات السيارة وسيتصل LoopLink بجهاز iPhone.</string>
+    <string name="failure_bluetooth_unavailable">لا يتوفر بلوتوث في وحدة السيارة هذه، لذا لا يمكن لـ CarPlay اللاسلكي الاتصال. جرّب كابل USB.</string>
+    <string name="failure_iphone_unpaired">لم يعد جهاز iPhone مقترنًا. أعد إقرانه من إعدادات البلوتوث في السيارة ثم اخترْه في LoopLink.</string>
+    <string name="failure_iphone_ambiguous">تم العثور على أكثر من جهاز iPhone. اختر جهازك من إعداد الاتصال في LoopLink.</string>
+    <string name="failure_car_hotspot_off">نقطة اتصال السيارة متوقفة. شغّلها من إعدادات السيارة.</string>
+    <string name="failure_hotspot_details">اسم نقطة اتصال السيارة وكلمة مرورها غير مُدخلين. أدخلهما في إعداد الاتصال في LoopLink.</string>
+    <string name="failure_link_dropped">أنهى جهاز iPhone الاتصال. جارٍ إعادة الاتصال…</string>
+    <string name="failure_usb_denied">تم رفض الوصول إلى USB. افصل جهاز iPhone ثم أعد توصيله واضغط على سماح.</string>
+    <string name="failure_setup_unavailable">CarPlay غير جاهز على وحدة السيارة هذه. أغلق LoopLink وافتحه من جديد. إن تكرر ذلك فأعد تثبيت التطبيق.</string>
+    <string name="failure_service_busy">تعذر تشغيل خدمة CarPlay. أغلق LoopLink تمامًا ثم افتحه من جديد.</string>
 </resources>

@@ -355,4 +355,14 @@
     <string name="advanced_hint">Качество видео, аудиоканалы и отчёты диагностики. Меняйте, только если вас попросили.</string>
     <string name="car_icon_in_carplay">Значок «Домой» в CarPlay</string>
     <string name="car_icon_in_carplay_description">Показывать значок возврата на экран автомобиля. Изменение переподключает CarPlay.</string>
+    <string name="failure_bluetooth_off">Bluetooth выключен. Включите его в настройках автомобиля, и LoopLink подключится к вашему iPhone.</string>
+    <string name="failure_bluetooth_unavailable">В этой магнитоле недоступен Bluetooth, поэтому беспроводной CarPlay не подключится. Используйте USB-кабель.</string>
+    <string name="failure_iphone_unpaired">Ваш iPhone больше не сопряжён. Сопрягите его снова в настройках Bluetooth автомобиля и выберите в LoopLink.</string>
+    <string name="failure_iphone_ambiguous">Найдено несколько iPhone. Выберите свой в настройке подключения LoopLink.</string>
+    <string name="failure_car_hotspot_off">Точка доступа автомобиля выключена. Включите её в настройках автомобиля.</string>
+    <string name="failure_hotspot_details">Не указаны имя и пароль точки доступа автомобиля. Введите их в настройке подключения LoopLink.</string>
+    <string name="failure_link_dropped">iPhone завершил соединение. Переподключение…</string>
+    <string name="failure_usb_denied">Доступ к USB отклонён. Отключите iPhone, подключите снова и нажмите «Разрешить».</string>
+    <string name="failure_setup_unavailable">CarPlay не готов на этой магнитоле. Закройте и снова откройте LoopLink. Если проблема повторяется, переустановите приложение.</string>
+    <string name="failure_service_busy">Не удалось запустить службу CarPlay. Полностью закройте LoopLink и откройте снова.</string>
 </resources>

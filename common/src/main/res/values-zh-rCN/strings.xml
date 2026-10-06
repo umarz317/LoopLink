@@ -366,4 +366,14 @@
     <string name="advanced_hint">视频质量、音频通道和诊断报告。仅在需要时更改。</string>
     <string name="car_icon_in_carplay">CarPlay 中的主页图标</string>
     <string name="car_icon_in_carplay_description">显示返回车机屏幕的图标。更改后会重新连接 CarPlay。</string>
+    <string name="failure_bluetooth_off">蓝牙已关闭。请在车机设置中打开蓝牙，LoopLink 将连接你的 iPhone。</string>
+    <string name="failure_bluetooth_unavailable">此车机没有可用的蓝牙，无法连接无线 CarPlay。请改用 USB 数据线。</string>
+    <string name="failure_iphone_unpaired">你的 iPhone 已不再配对。请在车机蓝牙设置中重新配对，然后在 LoopLink 中选择它。</string>
+    <string name="failure_iphone_ambiguous">找到多部 iPhone。请在 LoopLink 的连接设置中选择你的 iPhone。</string>
+    <string name="failure_car_hotspot_off">车机热点已关闭。请在车机设置中打开。</string>
+    <string name="failure_hotspot_details">缺少车机热点的名称和密码。请在 LoopLink 的连接设置中填写。</string>
+    <string name="failure_link_dropped">iPhone 已结束连接。正在重新连接…</string>
+    <string name="failure_usb_denied">USB 访问被拒绝。请拔出 iPhone 再插回，并点按“允许”。</string>
+    <string name="failure_setup_unavailable">此车机上的 CarPlay 尚未就绪。请关闭并重新打开 LoopLink；若仍出现，请重新安装应用。</string>
+    <string name="failure_service_busy">CarPlay 服务无法启动。请完全关闭 LoopLink 后重新打开。</string>
 </resources>
