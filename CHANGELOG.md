@@ -1,3 +1,11 @@
+# LoopLink 0.3.2 — 2026-10-08
+
+- Show normal Wi-Fi startup as progress and keep connection instructions accurate in every app language.
+- Apply fullscreen settings when returning to CarPlay, and respect the audio-focus switch while keeping media-key handling active.
+- Keep connection status and Back visible until video renders; restore them during decoder recovery and preserve rendering state when reusing a background session.
+- Stop audio and microphone resources when a session ends, prevent late audio callbacks from restarting playback, and preserve other sessions' stream metadata.
+- All 285 unit tests, lint and the source-only debug build pass (four existing lint warnings). Not tested on a head unit or with an iPhone.
+
 # LoopLink 0.3.1 — 2026-10-06
 
 - Play call audio on the media output so calls are heard through the head unit; the call and Siri microphone falls back to the plain mic when the voice source is unavailable.

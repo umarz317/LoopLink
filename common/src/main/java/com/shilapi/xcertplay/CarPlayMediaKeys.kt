@@ -18,8 +18,8 @@ import com.shilapi.xcertplay.orchestration.CarPlayController
  * Steering-wheel and other hardware media buttons for CarPlay.
  *
  * Android delivers media keys to a media session; the head unit picks the session of the audio-focus
- * owner. Once CarPlay plays music, DiPlay holds audio focus and an active session until the
- * CarPlay session ends, so play also works after a pause. Keys go to the iPhone as CarPlay media
+ * owner. Once CarPlay plays music, DiPlay keeps an active session until CarPlay ends, so play also
+ * works after a pause. Audio focus is claimed only when enabled in settings. Keys go to the iPhone as CarPlay media
  * HID presses ([CarPlayMediaButton]).
  */
 internal object CarPlayMediaKeys {
@@ -32,13 +32,15 @@ internal object CarPlayMediaKeys {
     private var session: MediaSession? = null
     private var focusRequest: AudioFocusRequest? = null
     private var focusHeld = false
+    private var focusEnabled = false
     private var appContext: Context? = null
 
     @Synchronized
-    fun attach(context: Context, next: CarPlayController) {
-        if (controller !== next) releaseLocked()
+    fun attach(context: Context, next: CarPlayController, audioFocusEnabled: Boolean) {
+        if (controller !== next || focusEnabled != audioFocusEnabled) releaseLocked()
         appContext = context.applicationContext
         controller = next
+        focusEnabled = audioFocusEnabled
         next.playbackListener = ::onIphonePlaying
     }
 
@@ -65,6 +67,7 @@ internal object CarPlayMediaKeys {
     // keys. When CarPlay starts playing again it becomes the car's media source again, as any player
     // would; only the start counts, so a car source picked while the iPhone plays on is not undone.
     private fun regainFocusLocked() {
+        if (!focusEnabled) return
         val request = focusRequest ?: return
         if (focusHeld) return
         val audio = appContext?.getSystemService(AudioManager::class.java) ?: return
@@ -85,6 +88,15 @@ internal object CarPlayMediaKeys {
     }
 
     private fun start(context: Context) {
+        if (focusEnabled) requestFocus(context)
+        session = MediaSession(context, "DiPlay CarPlay").apply {
+            setCallback(callback, mainHandler)
+            isActive = true
+        }
+        Log.i(TAG, "media keys active focusGranted=$focusHeld")
+    }
+
+    private fun requestFocus(context: Context) {
         val audio = context.getSystemService(AudioManager::class.java)
         val request = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
             .setAudioAttributes(
@@ -99,14 +111,8 @@ internal object CarPlayMediaKeys {
                 if (change == AudioManager.AUDIOFOCUS_LOSS) synchronized(this) { focusHeld = false }
             }, mainHandler)
             .build()
-        val granted = audio?.requestAudioFocus(request) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
+        focusHeld = audio?.requestAudioFocus(request) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
         focusRequest = request
-        focusHeld = granted
-        session = MediaSession(context, "DiPlay CarPlay").apply {
-            setCallback(callback, mainHandler)
-            isActive = true
-        }
-        Log.i(TAG, "media keys active focusGranted=$granted")
     }
 
     private fun releaseLocked() {

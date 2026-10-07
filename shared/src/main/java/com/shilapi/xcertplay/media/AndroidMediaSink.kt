@@ -131,6 +131,7 @@ class AndroidMediaSink(
     private val navigationChannel: Int = 0,
     context: Context? = null,
     onScreenStreamActiveChanged: ((Int, Boolean) -> Unit)? = null,
+    onScreenRenderingChanged: ((Int, Boolean) -> Unit)? = null,
     private val mediaBufferMillis: Int = MediaAudioBuffer.DEFAULT_MILLIS,
     private val onAudioDiagnostic: (String) -> Unit = {},
     /** True while any music ("media") audio stream is running; called from media threads. */
@@ -144,8 +145,10 @@ class AndroidMediaSink(
     )
     private val screenStateLock = Any()
     private val activeScreenTypes = mutableSetOf<Int>()
+    private val renderedScreenTypes = mutableSetOf<Int>()
     private val defaultSurface = surface
     @Volatile private var screenStreamActiveChanged = onScreenStreamActiveChanged
+    private var screenRenderingChanged = onScreenRenderingChanged
     private val surfaces = ConcurrentHashMap<Int, Surface>()
     private val videoDecoders = ConcurrentHashMap<Int, VideoDecoder>()
     private val mediaAudioTypes = mutableSetOf<AudioStreamId>()
@@ -194,6 +197,27 @@ class AndroidMediaSink(
         }
     }
 
+    /** Replays frames already rendered when a host adopts this background session. */
+    fun setScreenRenderingChangedListener(listener: ((Int, Boolean) -> Unit)?) {
+        synchronized(screenStateLock) {
+            screenRenderingChanged = listener
+            renderedScreenTypes.forEach { listener?.invoke(it, true) }
+        }
+    }
+
+    private fun onVideoRenderingChanged(type: Int, source: VideoDecoder, rendering: Boolean) {
+        synchronized(screenStateLock) {
+            // A decoder finishing shutdown must not clear its replacement's rendered state.
+            if (videoDecoders[type] !== source) return
+            updateScreenRenderingLocked(type, rendering)
+        }
+    }
+
+    private fun updateScreenRenderingLocked(type: Int, rendering: Boolean) {
+        val changed = if (rendering) renderedScreenTypes.add(type) else renderedScreenTypes.remove(type)
+        if (changed) screenRenderingChanged?.invoke(type, rendering)
+    }
+
     override fun onVideoCodec(type: Int, codec: VideoCodec) {
         pendingVideoCodec[type] = codec
     }
@@ -215,6 +239,7 @@ class AndroidMediaSink(
             pendingVideoCodec.remove(type)
         }
         synchronized(screenStateLock) {
+            if (!active) updateScreenRenderingLocked(type, false)
             if (active) activeScreenTypes.add(type) else activeScreenTypes.remove(type)
             screenStreamActiveChanged?.invoke(type, active)
         }
@@ -253,13 +278,16 @@ class AndroidMediaSink(
     }
 
     fun close() {
-        synchronized(screenStateLock) {
+        val decoders = synchronized(screenStateLock) {
+            renderedScreenTypes.forEach { screenRenderingChanged?.invoke(it, false) }
+            renderedScreenTypes.clear()
+            screenRenderingChanged = null
             activeScreenTypes.forEach { screenStreamActiveChanged?.invoke(it, false) }
             activeScreenTypes.clear()
             screenStreamActiveChanged = null
+            videoDecoders.values.toList().also { videoDecoders.clear() }
         }
-        videoDecoders.values.forEach(VideoDecoder::close)
-        videoDecoders.clear()
+        decoders.forEach(VideoDecoder::close)
         videoRecoveryHandlers.clear()
         videoDiagnosticHandlers.clear()
         recoveryExecutor.shutdownNow()
@@ -281,6 +309,7 @@ class AndroidMediaSink(
                 preferSoftwareHevcDecoder,
                 requestKeyFrame = { requestVideoRecovery(type) },
                 report = { videoDiagnosticHandlers[type]?.invoke(it) },
+                onRenderingChanged = { source, rendering -> onVideoRenderingChanged(type, source, rendering) },
             )
         }
 
@@ -311,6 +340,7 @@ private class VideoDecoder(
     private val preferSoftwareHevcDecoder: Boolean,
     private val requestKeyFrame: () -> Unit,
     private val report: (String) -> Unit,
+    private val onRenderingChanged: (VideoDecoder, Boolean) -> Unit,
 ) : Closeable {
     private val queue = VideoDecodeQueue()
     @Volatile private var running = true
@@ -507,6 +537,10 @@ private class VideoDecoder(
     private fun changeSurface(surface: Surface?) {
         if (outputSurface === surface) return
         outputSurface = surface
+        if (renderedFrameLogged) {
+            renderedFrameLogged = false
+            onRenderingChanged(this, false)
+        }
         if (surface == null) {
             releaseDecoder()
             Log.i(TAG, "video decoder detached from surface")
@@ -593,6 +627,7 @@ private class VideoDecoder(
                     if (render) stats.onRendered()
                     if (render && !renderedFrameLogged) {
                         renderedFrameLogged = true
+                        onRenderingChanged(this, true)
                         report("first frame rendered")
                         Log.i(TAG, "video decoder rendered first frame bytes=${info.size}")
                     }
@@ -625,6 +660,10 @@ private class VideoDecoder(
 
     @Synchronized
     private fun releaseDecoder() {
+        if (renderedFrameLogged) {
+            renderedFrameLogged = false
+            onRenderingChanged(this, false)
+        }
         val codec = decoder
         decoder = null
         if (codec != null) {
