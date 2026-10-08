@@ -144,6 +144,7 @@ class CarPlayMediaEngine(
 
         val capture = audioCaptureDirectory?.let { AudioPacketCapture(it, type) }
         if (capture != null) audioCaptures[streamKey] = capture
+        val clockProbe = RtpClockProbe()
         val audio = AudioStream(key, type, session::logDebug)
         val (dataPort, controlPort) = audio.listen(
             object : AudioStream.Listener {
@@ -160,6 +161,13 @@ class CarPlayMediaEngine(
                 override fun onRtp(rtp: ByteArray, sample: Int) {
                     synchronized(meta) {
                         if (audioMeta[streamKey] !== meta) return
+                        clockProbe.observe(sample, System.nanoTime())?.let { hz ->
+                            session.logDebug(
+                                "Audio: rtp clock type=$type audioType=$audioType " +
+                                    "audioFormat=0x${java.lang.Long.toHexString((stream["audioFormat"] as? Number)?.toLong() ?: 0L)} " +
+                                    "measuredHz=$hz microphoneClockHz=${microphone?.opusClockRate ?: "none"}",
+                            )
+                        }
                         sink.onAudioRtp(streamId, format, rtp, sample)
                     }
                 }
