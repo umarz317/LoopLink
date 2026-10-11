@@ -50,8 +50,8 @@ internal class VideoDecodeQueue(
     fun poll(timeoutMillis: Long): VideoJob? = jobs.poll(timeoutMillis, TimeUnit.MILLISECONDS)
 }
 
-/** Drain output while waiting for input: full output buffers can otherwise starve input forever. */
-internal object VideoInputPump {
+/** Drain output while waiting for input: full output buffers can otherwise starve input forever. Video and audio decoders share it. */
+internal object DecoderInputPump {
     fun acquire(
         running: () -> Boolean,
         drain: () -> Unit,
