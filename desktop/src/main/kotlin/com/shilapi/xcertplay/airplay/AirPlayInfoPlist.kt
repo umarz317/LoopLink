@@ -64,6 +64,9 @@ object AirPlayInfoPlist {
                     "prerendered" to true,
                 )
             }
+        } else {
+            // Without this the iPhone shows an empty car-app tile on the CarPlay home screen.
+            info["oemIconVisible"] = false
         }
         if (config.hevc) info["hevcInfo"] = emptyMap<String, Any?>()
         if (config.videoInCar) {

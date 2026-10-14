@@ -113,7 +113,8 @@ class AirPlayInfoPlistTest {
             ),
         )
 
-        assertFalse(info.containsKey("oemIconVisible"))
+        // An explicit false stops the iPhone from drawing an empty car-app tile.
+        assertEquals(false, info["oemIconVisible"])
         assertFalse(info.containsKey("oemIconLabel"))
         assertFalse(info.containsKey("oemIcons"))
     }

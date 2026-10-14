@@ -38,7 +38,7 @@ class Receiver(private val store: LocalStore, private val usbHelper: String, pri
     }
     @Synchronized override fun close() {
         val previous = run; run = null
-        previous?.close(); browser.reset(); state("idle", "Disconnected. Ready for another test.")
+        previous?.close(); browser.reset(); state("idle", "Disconnected.")
     }
     fun input(text: String) {
         val node = json.readTree(text)
