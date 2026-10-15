@@ -17,6 +17,7 @@ data class AudioFormat(
     val channels: Int,
     val payloadType: Int,
     val audioType: String = "media",
+    val rtpClockRate: Int = sampleRate,
 )
 
 /**
