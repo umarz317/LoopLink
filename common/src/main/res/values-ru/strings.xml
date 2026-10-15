@@ -365,4 +365,8 @@
     <string name="failure_usb_denied">Доступ к USB отклонён. Отключите iPhone, подключите снова и нажмите «Разрешить».</string>
     <string name="failure_setup_unavailable">CarPlay не готов на этой магнитоле. Закройте и снова откройте LoopLink. Если проблема повторяется, переустановите приложение.</string>
     <string name="failure_service_busy">Не удалось запустить службу CarPlay. Полностью закройте LoopLink и откройте снова.</string>
+    <string name="auto_car_hotspot_title">Автоматически включать точку доступа автомобиля</string>
+    <string name="auto_car_hotspot_description">Включает сохранённую точку доступа автомобиля перед беспроводным подключением. Требуется доступ Android «Изменение системных настроек».</string>
+    <string name="write_settings_missing">Доступ «Изменение системных настроек» ещё не разрешён. Разрешите его, чтобы LoopLink мог включать точку доступа.</string>
+    <string name="write_settings_allow">Разрешить доступ</string>
 </resources>

@@ -32,6 +32,8 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.shilapi.xcertplay.host.R
+import com.shilapi.xcertplay.network.CarHotspotSettings
+import com.shilapi.xcertplay.network.CarHotspotTethering
 import com.shilapi.xcertplay.orchestration.WirelessHotspotMode
 import java.io.File
 import java.text.SimpleDateFormat
@@ -337,12 +339,30 @@ class DiPlayActivity : ComponentActivity() {
         }
     }
 
-    // The car hotspot link needs the hotspot on; DiPlay only checks it (turning it on needs ADB-only permission).
-    // With no saved hotspot name, Connect already opens hotspot setup, so there is nothing to warn about.
+    // The car hotspot link needs the hotspot on. With no saved hotspot name, Connect already opens hotspot
+    // setup, and with automatic startup allowed the connection turns it on, so there is nothing to warn about.
     private fun carHotspotOff(): Boolean =
         AirPlayPersistence.loadWirelessHotspotMode(this) == WirelessHotspotMode.MANUAL &&
             storedSsid().isNotBlank() &&
+            !CarHotspotSettings.willEnable(this, WirelessHotspotMode.MANUAL) &&
             com.shilapi.xcertplay.network.CarHotspotStatus.isEnabled(this) == false
+
+    // Android 8.0 to 10 let an app with "Modify system settings" access start the car's saved hotspot.
+    private fun autoHotspotControls(parent: LinearLayout) {
+        if (!CarHotspotTethering.appStartSupported()) return
+        val enabled = CarHotspotSettings.enabled(this)
+        toggle(parent, getString(R.string.auto_car_hotspot_title), getString(R.string.auto_car_hotspot_description), enabled) { on ->
+            CarHotspotSettings.setEnabled(this, on)
+            if (on && !CarHotspotTethering.permitted(this)) openWriteSettingsAccess()
+            render()
+        }
+        if (enabled && !CarHotspotTethering.permitted(this)) {
+            parent.addView(notice(getString(R.string.write_settings_missing), getString(R.string.write_settings_allow)) { openWriteSettingsAccess() })
+        }
+    }
+
+    private fun openWriteSettingsAccess() =
+        openSystem(Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:$packageName")))
 
     private fun carHotspotOffDialog() {
         AlertDialog.Builder(this).setTitle(getString(R.string.car_hotspot_is_off))
@@ -424,6 +444,7 @@ class DiPlayActivity : ComponentActivity() {
                 parent.addView(valueRow(getString(R.string.hotspot_name), storedSsid(), R.drawable.ic_dp_hotspot) { saveDetails() }.first)
             }
             parent.addView(button(getString(R.string.open_car_hotspot_settings), false, icon = R.drawable.ic_dp_settings) { openCarWifiSettings() }, matchButton(0, 60))
+            autoHotspotControls(parent)
             if (carHotspotOff()) parent.addView(notice(getString(R.string.hotspot_details_off)).apply {
                 background = GradientDrawable().apply { setColor(FILL); cornerRadius = dp(16).toFloat() }
             })

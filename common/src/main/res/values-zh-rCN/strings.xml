@@ -376,4 +376,8 @@
     <string name="failure_usb_denied">USB 访问被拒绝。请拔出 iPhone 再插回，并点按“允许”。</string>
     <string name="failure_setup_unavailable">此车机上的 CarPlay 尚未就绪。请关闭并重新打开 LoopLink；若仍出现，请重新安装应用。</string>
     <string name="failure_service_busy">CarPlay 服务无法启动。请完全关闭 LoopLink 后重新打开。</string>
+    <string name="auto_car_hotspot_title">自动开启车机热点</string>
+    <string name="auto_car_hotspot_description">在无线连接前开启车机已保存的热点。需要 Android 的“修改系统设置”权限。</string>
+    <string name="write_settings_missing">尚未允许“修改系统设置”权限。允许后 LoopLink 才能开启热点。</string>
+    <string name="write_settings_allow">允许访问</string>
 </resources>

@@ -376,4 +376,8 @@
     <string name="failure_usb_denied">USB access was declined. Unplug your iPhone, plug it back in and tap Allow.</string>
     <string name="failure_setup_unavailable">CarPlay isn’t ready on this head unit. Close and reopen LoopLink. If it keeps happening, reinstall the app.</string>
     <string name="failure_service_busy">The CarPlay service couldn’t start. Close LoopLink completely and open it again.</string>
+    <string name="auto_car_hotspot_title">Turn on the car hotspot automatically</string>
+    <string name="auto_car_hotspot_description">Starts the car’s saved hotspot before a wireless connection. Needs Android’s “Modify system settings” access.</string>
+    <string name="write_settings_missing">“Modify system settings” access is not allowed yet. Allow it so LoopLink can turn on the hotspot.</string>
+    <string name="write_settings_allow">Allow access</string>
 </resources>

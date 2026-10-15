@@ -365,4 +365,8 @@
     <string name="failure_usb_denied">تم رفض الوصول إلى USB. افصل جهاز iPhone ثم أعد توصيله واضغط على سماح.</string>
     <string name="failure_setup_unavailable">CarPlay غير جاهز على وحدة السيارة هذه. أغلق LoopLink وافتحه من جديد. إن تكرر ذلك فأعد تثبيت التطبيق.</string>
     <string name="failure_service_busy">تعذر تشغيل خدمة CarPlay. أغلق LoopLink تمامًا ثم افتحه من جديد.</string>
+    <string name="auto_car_hotspot_title">تشغيل نقطة اتصال السيارة تلقائيًا</string>
+    <string name="auto_car_hotspot_description">يشغّل نقطة اتصال السيارة المحفوظة قبل الاتصال اللاسلكي. يتطلب إذن Android «تعديل إعدادات النظام».</string>
+    <string name="write_settings_missing">لم يُسمح بعد بإذن «تعديل إعدادات النظام». اسمح به ليتمكن LoopLink من تشغيل نقطة الاتصال.</string>
+    <string name="write_settings_allow">السماح بالوصول</string>
 </resources>
