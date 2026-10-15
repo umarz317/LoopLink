@@ -1,3 +1,12 @@
+# LoopLink 0.3.3 — 2026-10-15
+
+- Turn on the car hotspot automatically before a wireless connection on Android 9 and 10, with Android's "Modify system settings" access and without ADB. Connection setup has the switch and an Allow access prompt.
+- Bring in fixes from upstream DiPlay: USB connections survive USBMUX reply trailers, damaged NCM blocks and a read that completes as it times out, and iAP2 identification retries for older iOS.
+- Keep music playing when the head unit's audio clock drifts, drain decoded audio instead of dropping AAC packets, re-arm the prebuffer after underruns and recover from a sustained stale music backlog.
+- Use the Opus clock the iPhone chose for microphone timestamps, decrypt with the platform's ChaCha20-Poly1305, and send touches without Nagle's delay.
+- Fall back to a free AirPlay port when 7000 is in use, and keep the wired VPN tunnel and AirPlay listener scoped to LoopLink.
+- Unit tests and the debug build pass. Not tested on a head unit or with an iPhone.
+
 # LoopLink 0.3.2 — 2026-10-08
 
 - Show normal Wi-Fi startup as progress and keep connection instructions accurate in every app language.
