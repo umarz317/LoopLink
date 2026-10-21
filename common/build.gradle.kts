@@ -11,6 +11,9 @@ android {
 
     defaultConfig {
         minSdk = 28
+        // Test builds only: stream logs to a log server. Empty (off) unless passed with -P.
+        buildConfigField("String", "LOG_STREAM_URL", "\"${providers.gradleProperty("looplink.logStreamUrl").getOrElse("")}\"")
+        buildConfigField("String", "LOG_STREAM_TOKEN", "\"${providers.gradleProperty("looplink.logStreamToken").getOrElse("")}\"")
     }
 
     compileOptions {
@@ -19,6 +22,7 @@ android {
     }
 
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 

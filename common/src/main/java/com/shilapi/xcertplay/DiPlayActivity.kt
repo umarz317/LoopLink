@@ -90,6 +90,7 @@ class DiPlayActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         languagePreferenceAtCreate = AppLocale.preference(this)
         WindowCompat.setDecorFitsSystemWindows(window, true)
+        RemoteLogStream.start(this)
         window.statusBarColor = BG; window.navigationBarColor = BG
         WindowInsetsControllerCompat(window, window.decorView).apply {
             isAppearanceLightStatusBars = false
@@ -720,6 +721,7 @@ class DiPlayActivity : ComponentActivity() {
     }
 
     private fun bluetoothOffDialog() {
+            BluetoothDiagnostics.log(this, "wireless connect")
         pendingWireless = false
         AlertDialog.Builder(this).setTitle(getString(R.string.turn_on_bluetooth))
             .setMessage(getString(R.string.enable_the_car_s_bluetooth_and_pair_your_iphone_first))
@@ -748,6 +750,7 @@ class DiPlayActivity : ComponentActivity() {
             .setPositiveButton(getString(R.string.reset_and_connect)) { _, _ ->
                 CarPlayBackgroundSession.stop { runOnUiThread { resetWirelessGroup() } }
             }.setNegativeButton(getString(R.string.cancel), null).show()
+        BluetoothDiagnostics.log(this, "choose phone")
     }
 
     private fun resetWirelessGroup() {
@@ -772,6 +775,7 @@ class DiPlayActivity : ComponentActivity() {
                             }
                         }
                         waitUntilRemoved()
+        BluetoothDiagnostics.log(this, "Android Bluetooth is off or missing")
                     }
                     override fun onFailure(reason: Int) { channel.close(); toast(getString(R.string.could_not_reset_wi_fi_direct_close_the_other_projection_ap)) }
                 })
@@ -890,6 +894,7 @@ class DiPlayActivity : ComponentActivity() {
         }.setNegativeButton(getString(R.string.later), null).show()
     }
     private fun openSystem(intent: Intent) { runCatching { startActivity(intent) }.onFailure { toast(getString(R.string.open_this_setting_from_your_car_s_settings_app)) } }
+                    appendLine(BluetoothDiagnostics.describe(appContext))
     private fun toast(message: String) { Toast.makeText(this, message, Toast.LENGTH_LONG).show() }
 
     private fun version() = packageManager.getPackageInfo(packageName, 0).versionName ?: "0.1.0-beta.1"
