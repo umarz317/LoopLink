@@ -1,3 +1,9 @@
+# LoopLink 0.3.4 — 2026-10-21
+
+- Turn on the car hotspot automatically on Android 11 and newer through the head unit's own ADB over network, ported from upstream DiPlay. The switch asks for ADB approval once in connection setup and explains when ADB over network is off, not answering or pairing-only. Android 8.0 to 10 fall back to ADB when the firmware blocks the app's own start.
+- Log Android's own Bluetooth state when wireless setup starts and in the diagnostic report, to tell a head unit whose iPhone is paired only to a separate Bluetooth chip.
+- Unit tests, lint and the debug build pass. The ADB hotspot start is untested on a head unit or with an iPhone.
+
 # LoopLink 0.3.3 — 2026-10-15
 
 - Turn on the car hotspot automatically before a wireless connection on Android 9 and 10, with Android's "Modify system settings" access and without ADB. Connection setup has the switch and an Allow access prompt.
