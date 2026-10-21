@@ -380,4 +380,12 @@
     <string name="auto_car_hotspot_description">在无线连接前开启车机已保存的热点。需要 Android 的“修改系统设置”权限。</string>
     <string name="write_settings_missing">尚未允许“修改系统设置”权限。允许后 LoopLink 才能开启热点。</string>
     <string name="write_settings_allow">允许访问</string>
+    <string name="adb_checking_may_ask">正在检查 ADB 访问…如果车机询问，请允许 LoopLink 并勾选“始终允许”。</string>
+    <string name="adb_access_ready">ADB 访问已就绪。</string>
+    <string name="adb_not_approved">LoopLink 尚未获得授权。点按“检查 ADB 访问”，然后在车机屏幕上允许 LoopLink。</string>
+    <string name="adb_off">网络 ADB 已关闭。请在车机的开发者选项中开启。</string>
+    <string name="adb_pairing_only">此车机仅提供需要配对的无线调试，LoopLink 暂不支持。</string>
+    <string name="adb_network_not_answering">USB 调试已开启，但网络 ADB 没有回应。请在车机的开发者选项中开启网络 ADB；如果已经开启，请关掉再重新打开。</string>
+    <string name="check_adb_access">检查 ADB 访问</string>
+    <string name="auto_car_hotspot_adb_description">在无线连接前通过车机的网络 ADB 开启车机已保存的热点。LoopLink 只会请求一次授权；请在车机屏幕上允许并勾选“始终允许”。</string>
 </resources>

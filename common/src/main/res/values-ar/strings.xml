@@ -369,4 +369,12 @@
     <string name="auto_car_hotspot_description">يشغّل نقطة اتصال السيارة المحفوظة قبل الاتصال اللاسلكي. يتطلب إذن Android «تعديل إعدادات النظام».</string>
     <string name="write_settings_missing">لم يُسمح بعد بإذن «تعديل إعدادات النظام». اسمح به ليتمكن LoopLink من تشغيل نقطة الاتصال.</string>
     <string name="write_settings_allow">السماح بالوصول</string>
+    <string name="adb_checking_may_ask">جارٍ التحقق من الوصول عبر ADB… إذا طلبت السيارة، فاسمح لـ LoopLink وحدّد «السماح دائمًا».</string>
+    <string name="adb_access_ready">الوصول عبر ADB جاهز.</string>
+    <string name="adb_not_approved">لم تتم الموافقة على LoopLink بعد. اضغط «التحقق من الوصول عبر ADB» ثم اسمح لـ LoopLink على شاشة السيارة.</string>
+    <string name="adb_off">ADB عبر الشبكة متوقف. شغّله من خيارات المطوّر في وحدة القيادة.</string>
+    <string name="adb_pairing_only">توفر وحدة القيادة هذه تصحيح الأخطاء اللاسلكي مع الإقران فقط، وهو ما لا يدعمه LoopLink بعد.</string>
+    <string name="adb_network_not_answering">تصحيح أخطاء USB مفعّل، لكن ADB عبر الشبكة لا يستجيب. شغّل ADB عبر الشبكة من خيارات المطوّر في وحدة القيادة. إذا كان مشغّلًا بالفعل، فأوقفه ثم شغّله من جديد.</string>
+    <string name="check_adb_access">التحقق من الوصول عبر ADB</string>
+    <string name="auto_car_hotspot_adb_description">يشغّل نقطة اتصال السيارة المحفوظة قبل الاتصال اللاسلكي باستخدام ADB عبر الشبكة في وحدة القيادة. يطلب LoopLink الموافقة مرة واحدة؛ اسمح بذلك على شاشة السيارة وحدّد «السماح دائمًا».</string>
 </resources>

@@ -32,6 +32,8 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.shilapi.xcertplay.host.R
+import com.shilapi.xcertplay.adb.AdbKeys
+import com.shilapi.xcertplay.adb.LocalAdb
 import com.shilapi.xcertplay.network.CarHotspotSettings
 import com.shilapi.xcertplay.network.CarHotspotTethering
 import com.shilapi.xcertplay.orchestration.WirelessHotspotMode
@@ -88,9 +90,9 @@ class DiPlayActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        RemoteLogStream.start(this)
         languagePreferenceAtCreate = AppLocale.preference(this)
         WindowCompat.setDecorFitsSystemWindows(window, true)
-        RemoteLogStream.start(this)
         window.statusBarColor = BG; window.navigationBarColor = BG
         WindowInsetsControllerCompat(window, window.decorView).apply {
             isAppearanceLightStatusBars = false
@@ -350,7 +352,7 @@ class DiPlayActivity : ComponentActivity() {
 
     // Android 8.0 to 10 let an app with "Modify system settings" access start the car's saved hotspot.
     private fun autoHotspotControls(parent: LinearLayout) {
-        if (!CarHotspotTethering.appStartSupported()) return
+        if (!CarHotspotTethering.appStartSupported()) return adbHotspotControls(parent)
         val enabled = CarHotspotSettings.enabled(this)
         toggle(parent, getString(R.string.auto_car_hotspot_title), getString(R.string.auto_car_hotspot_description), enabled) { on ->
             CarHotspotSettings.setEnabled(this, on)
@@ -360,6 +362,56 @@ class DiPlayActivity : ComponentActivity() {
         if (enabled && !CarHotspotTethering.permitted(this)) {
             parent.addView(notice(getString(R.string.write_settings_missing), getString(R.string.write_settings_allow)) { openWriteSettingsAccess() })
         }
+    }
+
+    // Android 11+ only let the head unit's ADB start the hotspot. The approval dialog appears only from this switch.
+    private fun adbHotspotControls(parent: LinearLayout) {
+        if (!CarHotspotTethering.adbStartSupported()) return
+        val enabled = CarHotspotSettings.enabled(this)
+        toggle(parent, getString(R.string.auto_car_hotspot_title), getString(R.string.auto_car_hotspot_adb_description), enabled) { on ->
+            if (on) checkAdbAccess(enableWhenReady = true)
+            else { CarHotspotSettings.setEnabled(this, false); adbStatus = null; render() }
+        }
+        val status = adbStatus ?: if (enabled && !CarHotspotSettings.adbApproved(this)) R.string.adb_not_approved else null
+        if (status != null) {
+            val action = if (adbCheckInProgress || status == R.string.adb_access_ready) null else getString(R.string.check_adb_access)
+            parent.addView(notice(getString(status), action) { checkAdbAccess(enableWhenReady = true) })
+        }
+    }
+
+    private var adbCheckInProgress = false
+    private var adbStatus: Int? = null
+
+    private fun checkAdbAccess(enableWhenReady: Boolean) {
+        if (adbCheckInProgress) return
+        adbCheckInProgress = true
+        adbStatus = R.string.adb_checking_may_ask
+        render()
+        val app = applicationContext
+        Thread({
+            val access = runCatching { LocalAdb(AdbKeys.load(app)).use { it.connect(mayAsk = true) } }
+                .onFailure { Log.w("LoopLinkHotspot", "ADB check failed", it) }
+                .getOrDefault(LocalAdb.Access.UNREACHABLE)
+            Log.i("LoopLinkHotspot", "ADB check for car hotspot: $access")
+            runOnUiThread {
+                adbCheckInProgress = false
+                if (access == LocalAdb.Access.READY || access == LocalAdb.Access.NOT_APPROVED)
+                    CarHotspotSettings.setAdbApproved(app, access == LocalAdb.Access.READY)
+                if (access == LocalAdb.Access.READY && enableWhenReady) CarHotspotSettings.setEnabled(app, true)
+                adbStatus = when (access) {
+                    LocalAdb.Access.READY -> R.string.adb_access_ready
+                    LocalAdb.Access.NOT_APPROVED -> R.string.adb_not_approved
+                    LocalAdb.Access.UNSUPPORTED -> R.string.adb_pairing_only
+                    // The developer-options switch can stay on while nothing listens on port 5555.
+                    LocalAdb.Access.UNREACHABLE ->
+                        if (Settings.Global.getInt(contentResolver, Settings.Global.ADB_ENABLED, 0) == 1)
+                            R.string.adb_network_not_answering else R.string.adb_off
+                }
+                if (isFinishing || isDestroyed) return@runOnUiThread
+                render()
+                toast(getString(adbStatus!!))
+            }
+        }, "looplink-adb-check").start()
     }
 
     private fun openWriteSettingsAccess() =
@@ -669,6 +721,7 @@ class DiPlayActivity : ComponentActivity() {
         }
         if (wireless && carHotspotOff()) { carHotspotOffDialog(); return }
         if (wireless) {
+            BluetoothDiagnostics.log(this, "wireless connect")
             // Wireless CarPlay starts over Bluetooth: say what's missing here, not after a silent failure.
             if (Build.VERSION.SDK_INT >= 31 && checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
                 pendingWireless = true; bluetoothPermission.launch(Manifest.permission.BLUETOOTH_CONNECT); return
@@ -697,6 +750,7 @@ class DiPlayActivity : ComponentActivity() {
         if (Build.VERSION.SDK_INT >= 31 && checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             bluetoothPermission.launch(Manifest.permission.BLUETOOTH_CONNECT); return
         }
+        BluetoothDiagnostics.log(this, "choose phone")
         val adapter = getSystemService(BluetoothManager::class.java)?.adapter
         if (adapter == null || !adapter.isEnabled) { bluetoothOffDialog(); return }
         val devices = runCatching { adapter.bondedDevices.sortedBy { it.name ?: "" } }.getOrDefault(emptyList())
@@ -721,7 +775,7 @@ class DiPlayActivity : ComponentActivity() {
     }
 
     private fun bluetoothOffDialog() {
-            BluetoothDiagnostics.log(this, "wireless connect")
+        BluetoothDiagnostics.log(this, "Android Bluetooth is off or missing")
         pendingWireless = false
         AlertDialog.Builder(this).setTitle(getString(R.string.turn_on_bluetooth))
             .setMessage(getString(R.string.enable_the_car_s_bluetooth_and_pair_your_iphone_first))
@@ -750,7 +804,6 @@ class DiPlayActivity : ComponentActivity() {
             .setPositiveButton(getString(R.string.reset_and_connect)) { _, _ ->
                 CarPlayBackgroundSession.stop { runOnUiThread { resetWirelessGroup() } }
             }.setNegativeButton(getString(R.string.cancel), null).show()
-        BluetoothDiagnostics.log(this, "choose phone")
     }
 
     private fun resetWirelessGroup() {
@@ -775,7 +828,6 @@ class DiPlayActivity : ComponentActivity() {
                             }
                         }
                         waitUntilRemoved()
-        BluetoothDiagnostics.log(this, "Android Bluetooth is off or missing")
                     }
                     override fun onFailure(reason: Int) { channel.close(); toast(getString(R.string.could_not_reset_wi_fi_direct_close_the_other_projection_ap)) }
                 })
@@ -842,6 +894,7 @@ class DiPlayActivity : ComponentActivity() {
                     appendLine("Saved video preference (may differ from active session): ${if (AirPlayPersistence.loadHevcEnabled(appContext)) "HEVC" else "H.264"}; ${AirPlayPersistence.loadFps(appContext)} fps")
                     appendLine("CarPlay size: ${com.shilapi.xcertplay.airplay.CarPlaySize.fromWidthMillimeters(AirPlayPersistence.loadWidthPhysicalMm(appContext)).label}")
                     appendLine("Saved resolution preference (may differ from active session): ${AirPlayPersistence.loadDisplayScaleTenths(appContext) * 10}%")
+                    appendLine(BluetoothDiagnostics.describe(appContext))
                     appendLine("Session: ${if (CarPlayBackgroundSession.active) "active" else if (CarPlayBackgroundSession.hasSession()) "connecting" else "stopped"}")
                     appendLine("Head-unit board: ${Build.BOARD}; hardware: ${Build.HARDWARE}; build: ${Build.DISPLAY}")
                     appendLine()
@@ -894,7 +947,6 @@ class DiPlayActivity : ComponentActivity() {
         }.setNegativeButton(getString(R.string.later), null).show()
     }
     private fun openSystem(intent: Intent) { runCatching { startActivity(intent) }.onFailure { toast(getString(R.string.open_this_setting_from_your_car_s_settings_app)) } }
-                    appendLine(BluetoothDiagnostics.describe(appContext))
     private fun toast(message: String) { Toast.makeText(this, message, Toast.LENGTH_LONG).show() }
 
     private fun version() = packageManager.getPackageInfo(packageName, 0).versionName ?: "0.1.0-beta.1"

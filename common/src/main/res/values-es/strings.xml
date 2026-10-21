@@ -369,4 +369,12 @@
     <string name="auto_car_hotspot_description">Inicia el punto de acceso guardado del coche antes de una conexión inalámbrica. Necesita el acceso «Modificar ajustes del sistema» de Android.</string>
     <string name="write_settings_missing">El acceso «Modificar ajustes del sistema» aún no está permitido. Permítelo para que LoopLink pueda activar el punto de acceso.</string>
     <string name="write_settings_allow">Permitir acceso</string>
+    <string name="adb_checking_may_ask">Comprobando el acceso ADB… Si el coche lo pide, permite LoopLink y marca «Permitir siempre».</string>
+    <string name="adb_access_ready">Acceso ADB listo.</string>
+    <string name="adb_not_approved">LoopLink aún no está autorizado. Toca «Comprobar acceso ADB» y permite LoopLink en la pantalla del coche.</string>
+    <string name="adb_off">ADB por red está desactivado. Actívalo en las opciones de desarrollador de la unidad principal.</string>
+    <string name="adb_pairing_only">Esta unidad principal solo ofrece depuración inalámbrica con emparejamiento, que LoopLink aún no admite.</string>
+    <string name="adb_network_not_answering">La depuración USB está activada, pero ADB por red no responde. Activa ADB por red en las opciones de desarrollador de la unidad principal. Si ya está activado, desactívalo y vuelve a activarlo.</string>
+    <string name="check_adb_access">Comprobar acceso ADB</string>
+    <string name="auto_car_hotspot_adb_description">Inicia el punto de acceso guardado del coche antes de una conexión inalámbrica mediante ADB por red de la unidad principal. LoopLink pide autorización una vez; permítelo en la pantalla del coche y marca «Permitir siempre».</string>
 </resources>

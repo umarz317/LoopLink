@@ -369,4 +369,12 @@
     <string name="auto_car_hotspot_description">Включает сохранённую точку доступа автомобиля перед беспроводным подключением. Требуется доступ Android «Изменение системных настроек».</string>
     <string name="write_settings_missing">Доступ «Изменение системных настроек» ещё не разрешён. Разрешите его, чтобы LoopLink мог включать точку доступа.</string>
     <string name="write_settings_allow">Разрешить доступ</string>
+    <string name="adb_checking_may_ask">Проверка доступа ADB… Если машина спросит, разрешите LoopLink и отметьте «Всегда разрешать».</string>
+    <string name="adb_access_ready">Доступ ADB есть.</string>
+    <string name="adb_not_approved">LoopLink ещё не разрешён. Нажмите «Проверить доступ ADB» и разрешите LoopLink на экране машины.</string>
+    <string name="adb_off">ADB по сети выключен. Включите его в параметрах разработчика головного устройства.</string>
+    <string name="adb_pairing_only">Это головное устройство поддерживает только беспроводную отладку с сопряжением, которую LoopLink пока не поддерживает.</string>
+    <string name="adb_network_not_answering">Отладка по USB включена, но ADB по сети не отвечает. Включите ADB по сети в параметрах разработчика головного устройства. Если он уже включён, выключите его и включите снова.</string>
+    <string name="check_adb_access">Проверить доступ ADB</string>
+    <string name="auto_car_hotspot_adb_description">Включает сохранённую точку доступа автомобиля перед беспроводным подключением через ADB по сети головного устройства. LoopLink один раз запросит разрешение; разрешите его на экране машины и отметьте «Всегда разрешать».</string>
 </resources>

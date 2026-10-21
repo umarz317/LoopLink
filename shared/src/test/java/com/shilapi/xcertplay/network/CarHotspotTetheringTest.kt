@@ -6,6 +6,7 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.concurrent.thread
 import org.junit.Assert.*
 import org.junit.Test
@@ -72,6 +73,89 @@ class CarHotspotTetheringTest {
             enable(start = { throw InvocationTargetException(IllegalStateException()) }))
     }
 
+    @Test fun missingBinderMethodFallsBackToAdb() {
+        var on = false
+        val result = CarHotspotTethering.enable(
+            1_000, { false }, { true }, { on },
+            startFallback = { on = true; true },
+            start = { throw NoSuchMethodException() },
+        )
+        assertEquals(Result.READY, result)
+    }
+
+    @Test fun securityExceptionFallsBackToAdb() {
+        var on = false
+        val result = CarHotspotTethering.enable(
+            1_000, { false }, { true }, { on },
+            startFallback = { on = true; true },
+            start = { throw InvocationTargetException(SecurityException()) },
+        )
+        assertEquals(Result.READY, result)
+    }
+
+    @Test fun failedAdbFallbackReportsOriginalDiagnostic() {
+        val result = CarHotspotTethering.enable(
+            20, { false }, { true }, { false },
+            startFallback = { false },
+            start = { throw NoSuchMethodException() },
+        )
+        assertEquals(Result.UNSUPPORTED, result)
+    }
+
+    @Test fun cancellationDuringReflectionFailureDoesNotStartTheFallback() {
+        var cancelled = false
+        var fallbackCalls = 0
+        val result = CarHotspotTethering.enable(1_000, { cancelled }, { true }, { false },
+            startFallback = { fallbackCalls++; true },
+            start = { cancelled = true; throw SecurityException() })
+        assertEquals(Result.CANCELLED, result)
+        assertEquals(0, fallbackCalls)
+    }
+
+    @Test fun anExpiredReflectionAttemptDoesNotGetAnotherAdbBudget() {
+        var fallbackCalls = 0
+        val result = CarHotspotTethering.enable(20, { false }, { true }, { false },
+            startFallback = { fallbackCalls++; true },
+            start = { Thread.sleep(30); throw NoSuchMethodException() })
+        assertEquals(Result.TIMED_OUT, result)
+        assertEquals(0, fallbackCalls)
+    }
+
+    @Test fun unknownAppStateCanUseAFallbackWhichIndependentlyObservesTheAp() {
+        var observed: Boolean? = null
+        val result = CarHotspotTethering.enable(1_000, { false }, { true }, { observed },
+            startFallback = { observed = true; true }, start = { fail("Do not invoke reflection with unknown state") })
+        assertEquals(Result.READY, result)
+    }
+
+    @Test fun acceptingAFallbackRequestDoesNotInventObservableReadiness() {
+        val result = CarHotspotTethering.enable(20, { false }, { true }, { null },
+            startFallback = { true }, start = { fail("Do not start blindly") })
+        assertEquals(Result.TIMED_OUT, result)
+    }
+
+    @Test fun anAdbEnabledObservationCannotMaskALaterPlatformOffState() {
+        val observed = AtomicReference<Boolean?>()
+        val state = CarHotspotTethering.stateWithAdbObservation({ false }, observed)
+        val result = CarHotspotTethering.enable(20, { false }, { true }, state,
+            startFallback = { observed.set(true); true }, start = { throw NoSuchMethodException() })
+        assertEquals(Result.TIMED_OUT, result)
+    }
+
+    @Test fun anAdbEnabledObservationAllowsHiddenPlatformStatusToCompleteStartup() {
+        val observed = AtomicReference<Boolean?>()
+        val state = CarHotspotTethering.stateWithAdbObservation({ null }, observed)
+        val result = CarHotspotTethering.enable(1_000, { false }, { true }, state,
+            startFallback = { observed.set(true); true }, start = { fail("Do not start blindly") })
+        assertEquals(Result.READY, result)
+    }
+
+    @Test fun aFallbackExceptionPreservesTheOriginalPermissionDiagnostic() {
+        val result = CarHotspotTethering.enable(1_000, { false }, { true }, { false },
+            startFallback = { throw IllegalStateException("ADB unavailable") }, start = { throw SecurityException() })
+        assertEquals(Result.PERMISSION_REQUIRED, result)
+    }
+
     @Test fun cancellationWhileReadingEnabledStateCannotReportReady() {
         var cancelled = false
         assertEquals(Result.CANCELLED, enable(cancelled = { cancelled }, state = {
@@ -84,8 +168,20 @@ class CarHotspotTetheringTest {
         val result = CarHotspotTethering.enable(20, { false }, { true }, {
             Thread.sleep(30)
             true
-        }, start = { fail("No reflection after expiry") })
+        }, startFallback = { fail("No fallback after expiry"); false },
+            start = { fail("No reflection after expiry") })
         assertEquals(Result.TIMED_OUT, result)
+    }
+
+    @Test fun anInterruptedFallbackPreservesCancellation() {
+        try {
+            val result = CarHotspotTethering.enable(1_000, { false }, { true }, { null },
+                startFallback = { throw InterruptedException() }, start = { fail("Do not start blindly") })
+            assertEquals(Result.CANCELLED, result)
+            assertTrue(Thread.currentThread().isInterrupted)
+        } finally {
+            Thread.interrupted()
+        }
     }
 
     @Test fun cancelledRequestDoesNotStartTheHotspot() {
@@ -128,6 +224,14 @@ class CarHotspotTetheringTest {
         assertFalse(one.isAlive); assertFalse(two.isAlive)
         assertEquals(Result.READY, first); assertEquals(Result.READY, second)
         assertEquals(1, calls.get())
+    }
+
+    @Test fun android11StartsOnlyThroughAdb() {
+        var on = false
+        assertEquals(Result.READY, CarHotspotTethering.enable(1_000, { false }, { true }, { on },
+            startFallback = { on = true; true }, start = null))
+        assertEquals(Result.FAILED, CarHotspotTethering.enable(20, { false }, { true }, { false },
+            startFallback = { false }, start = null))
     }
 
     private fun enable(

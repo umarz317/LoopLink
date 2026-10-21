@@ -380,4 +380,12 @@
     <string name="auto_car_hotspot_description">Starts the car’s saved hotspot before a wireless connection. Needs Android’s “Modify system settings” access.</string>
     <string name="write_settings_missing">“Modify system settings” access is not allowed yet. Allow it so LoopLink can turn on the hotspot.</string>
     <string name="write_settings_allow">Allow access</string>
+    <string name="adb_checking_may_ask">Checking ADB access… If the car asks, allow LoopLink and tick “Always allow”.</string>
+    <string name="adb_access_ready">ADB access ready.</string>
+    <string name="adb_not_approved">LoopLink is not approved yet. Tap Check ADB access, then allow LoopLink on the car screen.</string>
+    <string name="adb_off">ADB over network is off. Turn it on in the head unit’s developer options.</string>
+    <string name="adb_pairing_only">This head unit offers only wireless debugging with pairing, which LoopLink does not support yet.</string>
+    <string name="adb_network_not_answering">USB debugging is on, but ADB over network does not answer. Turn ADB over network on in the head unit’s developer options. If it is already on, turn it off and on again.</string>
+    <string name="check_adb_access">Check ADB access</string>
+    <string name="auto_car_hotspot_adb_description">Starts the car’s saved hotspot before a wireless connection, using the head unit’s ADB over network. LoopLink asks for approval once; allow it on the car screen and tick “Always allow”.</string>
 </resources>
